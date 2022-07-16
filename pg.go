@@ -2,6 +2,8 @@ package pg
 
 import (
 	"fmt"
+	
+	"github.com/pandudpn/go-pg/utils"
 )
 
 const (
@@ -31,6 +33,10 @@ func New(cfg ...*Config) *PG {
 	
 	if len(cfg) > 0 {
 		p.config = cfg[0]
+	}
+	// disable logging
+	if !p.config.Logging {
+		utils.DisableLogging()
 	}
 	
 	// when configuration from parameter and env is production

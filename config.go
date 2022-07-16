@@ -34,5 +34,5 @@ type Config struct {
 var DefaultConfig = &Config{
 	Environment: Staging,
 	Logging:     true,
-	LogFunc:     utils.Logger(),
+	LogFunc:     utils.NewLogger(),
 }
