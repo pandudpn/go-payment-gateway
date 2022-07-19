@@ -2,8 +2,8 @@ package pg
 
 import (
 	"fmt"
-	
-	"github.com/pandudpn/go-pg/utils"
+
+	"github.com/pandudpn/go-payment-gateway/utils"
 )
 
 const (
@@ -15,10 +15,10 @@ const (
 type PG struct {
 	// configuration payment gateway
 	config *Config
-	
+
 	// midtrans configuration
 	midtrans *Midtrans
-	
+
 	// xendit configuration
 	xendit *Xendit
 }
@@ -30,7 +30,7 @@ func New(cfg ...*Config) *PG {
 		midtrans: &Midtrans{uri: mdUriSandbox, credentials: &Credentials{}},
 		xendit:   &Xendit{uri: xndUri, credentials: &Credentials{}},
 	}
-	
+
 	if len(cfg) > 0 {
 		p.config = cfg[0]
 	}
@@ -38,13 +38,13 @@ func New(cfg ...*Config) *PG {
 	if !p.config.Logging {
 		utils.DisableLogging()
 	}
-	
+
 	// when configuration from parameter and env is production
 	// set all configuration to production
 	if p.config.Environment == Production {
 		p.SetProduction()
 	}
-	
+
 	return p
 }
 
@@ -52,7 +52,7 @@ func New(cfg ...*Config) *PG {
 func (p *PG) SetProduction() {
 	// re-value env with Production
 	p.config.Environment = Production
-	
+
 	// set production uri to all gateway
 	p.midtrans.uri = mdUriProduction
 }
@@ -63,7 +63,7 @@ func (p *PG) SetMidtransCredentials(clientSecret string) error {
 	if !checkCredentials(p.config.Environment, clientSecret, midtrans) {
 		return fmt.Errorf("%s credentials invalid for environment %s", midtrans, p.config.Environment)
 	}
-	
+
 	p.midtrans.credentials.ClientSecret = clientSecret
 	return nil
 }
@@ -74,7 +74,7 @@ func (p *PG) SetXenditCredentials(clientSecret string) error {
 	if !checkCredentials(p.config.Environment, clientSecret, xendit) {
 		return fmt.Errorf("%s credentials invalid for environment %s", xendit, p.config.Environment)
 	}
-	
+
 	p.xendit.credentials.ClientSecret = clientSecret
 	return nil
 }

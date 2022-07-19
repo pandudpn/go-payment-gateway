@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	mds "github.com/pandudpn/go-pg/internal/midtrans"
-	"github.com/pandudpn/go-pg/utils"
+	mds "github.com/pandudpn/go-payment-gateway/internal/midtrans"
+	"github.com/pandudpn/go-payment-gateway/utils"
 )
 
 const (
@@ -22,7 +22,7 @@ type Midtrans struct {
 	credentials *Credentials
 }
 
-// CreateEWalletCharge charge a payment e-wallet
+// CreateEWalletCharge charge a payment e-wallet to payment gateway midtrans
 func (p *PG) CreateEWalletCharge(e *mds.EWallet) (*mds.ChargeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
 	defer cancel()

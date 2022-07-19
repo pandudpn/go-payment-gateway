@@ -1,7 +1,7 @@
 package pg
 
 import (
-	"github.com/pandudpn/go-pg/utils"
+	"github.com/pandudpn/go-payment-gateway/utils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,13 +17,13 @@ type Config struct {
 	//
 	// Default: Staging
 	Environment env `json:"environment"`
-	
+
 	// When set to true, this will log your request, response or error to stdout
 	// Use logrus as logging
 	//
 	// Default: true
 	Logging bool `json:"logging"`
-	
+
 	// Format log when Logging is set to true
 	//
 	// Default: logrus.TextFormatter | [ts] - [level] - [message]

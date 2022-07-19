@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pandudpn/go-pg/utils"
+	"github.com/pandudpn/go-payment-gateway/utils"
 )
 
 // SetUsername for Authorization Basic
