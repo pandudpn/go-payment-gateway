@@ -1,7 +1,17 @@
 package midtrans
 
+import (
+	"context"
+)
+
 // PaymentInterface define method to be implemented by each PaymentType
 type PaymentInterface interface {
-	// CreateRequest will create a new instance of Charge Payment
-	CreateRequest() *request
+	// SetUsername will set username in Basic Auth
+	SetUsername(username string)
+
+	// SetURI set url target
+	SetURI(uri string)
+
+	// Do create a charge payments
+	Do(ctx context.Context) (*ChargeResponse, error)
 }
