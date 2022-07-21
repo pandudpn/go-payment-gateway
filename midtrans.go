@@ -13,41 +13,35 @@ const (
 	mdUriProduction string = "https://api.midtrans.com"
 )
 
-// Midtrans configuration
-type Midtrans struct {
-	// uri is base url of Midtrans Core API
+// midtrans configuration
+type midtrans struct {
+	// uri is base url of midtrans Core API
 	uri string
 
-	// credentials key for access Midtrans Core API
+	// credentials key for access midtrans Core API
 	credentials *Credentials
 }
 
 // CreateEWalletCharge charge a payment e-wallet to payment gateway midtrans
-func (p *PG) CreateEWalletCharge(e *mds.EWallet) (*mds.ChargeResponse, error) {
+func (m *midtrans) CreateEWalletCharge(e *mds.EWallet) (*mds.ChargeResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
 	defer cancel()
 
-	return p.createEWalletCharge(ctx, e)
+	return m.createEWalletCharge(ctx, e)
 }
 
 // CreateEWalletChargeWithContext charge a payment e-wallet with context
-func (p *PG) CreateEWalletChargeWithContext(ctx context.Context, e *mds.EWallet) (*mds.ChargeResponse, error) {
-	return p.createEWalletCharge(ctx, e)
+func (m *midtrans) CreateEWalletChargeWithContext(ctx context.Context, e *mds.EWallet) (*mds.ChargeResponse, error) {
+	return m.createEWalletCharge(ctx, e)
 }
 
 // createEWalletCharge do a request to midtrans to charge payment e-wallet
-func (p *PG) createEWalletCharge(ctx context.Context, e *mds.EWallet) (*mds.ChargeResponse, error) {
+func (m *midtrans) createEWalletCharge(ctx context.Context, e *mds.EWallet) (*mds.ChargeResponse, error) {
 	// check general parameters required
 	// if not exists, just given error parameters invalid
 	if e == nil || e.TransactionDetails == nil || (e.ItemDetails == nil || len(e.ItemDetails) < 1) {
 		utils.Log.Error("one or parameters midtrans.EWallet is nil")
 		return nil, ErrInvalidParameter
-	}
-
-	// if credentials midtrans not exists, send error credentials nil
-	if p.midtrans == nil {
-		utils.Log.Errorf("credentials midtrans is nil")
-		return nil, ErrNilCredentials
 	}
 
 	// check required each payment
@@ -61,8 +55,8 @@ func (p *PG) createEWalletCharge(ctx context.Context, e *mds.EWallet) (*mds.Char
 
 	// create a instance e-wallet request
 	req := e.CreateRequest()
-	req.SetURI(p.midtrans.uri + "/v2/charge")
-	req.SetUsername(p.midtrans.credentials.ClientSecret)
+	req.SetURI(m.uri + "/v2/charge")
+	req.SetUsername(m.credentials.ClientSecret)
 
 	charge, err := req.Do(ctx)
 	return charge, err
