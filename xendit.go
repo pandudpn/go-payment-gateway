@@ -101,10 +101,10 @@ func (x *xendit) createEWalletCharge(ctx context.Context, e *xnd.EWallet) (*xnd.
 	}
 
 	// create a instance e-wallet request
-	req := e.CreateRequest()
-	req.SetURI(x.uri + "/ewallets/charges")
-	req.SetUsername(x.credentials.ClientSecret)
+	ewallet := xnd.NewChargeEWallet(e)
+	ewallet.SetURI(x.uri + "/ewallets/charges")
+	ewallet.SetUsername(x.credentials.ClientSecret)
 
-	charge, err := req.Do(ctx)
+	charge, err := ewallet.Do(ctx)
 	return charge, err
 }

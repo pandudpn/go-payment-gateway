@@ -54,10 +54,10 @@ func (m *midtrans) createEWalletCharge(ctx context.Context, e *mds.EWallet) (*md
 	}
 
 	// create a instance e-wallet request
-	req := e.CreateRequest()
-	req.SetURI(m.uri + "/v2/charge")
-	req.SetUsername(m.credentials.ClientSecret)
+	ewallet := mds.NewChargeEWallet(e)
+	ewallet.SetURI(m.uri + "/v2/charge")
+	ewallet.SetUsername(m.credentials.ClientSecret)
 
-	charge, err := req.Do(ctx)
+	charge, err := ewallet.Do(ctx)
 	return charge, err
 }
