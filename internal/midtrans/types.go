@@ -157,37 +157,37 @@ type EChannel struct {
 	// BillInfo3 label 2 allows only 10 characters
 	//
 	// Default: ""
-	BillInfo3 string `json:"bill_info3"`
+	BillInfo3 string `json:"bill_info3,omitempty"`
 
 	// BillInfo4 value for label 2. allows only 30 characters
 	//
 	// Default: ""
-	BillInfo4 string `json:"bill_info4"`
+	BillInfo4 string `json:"bill_info4,omitempty"`
 
 	// BillInfo5 label 3 allows only 10 characters
 	//
 	// Default: ""
-	BillInfo5 string `json:"bill_info5"`
+	BillInfo5 string `json:"bill_info5,omitempty"`
 
 	// BillInfo6 value for label 3. allows only 30 characters
 	//
 	// Default: ""
-	BillInfo6 string `json:"bill_info6"`
+	BillInfo6 string `json:"bill_info6,omitempty"`
 
 	// BillInfo7 label 4 allows only 10 characters
 	//
 	// Default: ""
-	BillInfo7 string `json:"bill_info7"`
+	BillInfo7 string `json:"bill_info7,omitempty"`
 
 	// BillInfo8 value for label 4. allows only 30 characters
 	//
 	// Default: ""
-	BillInfo8 string `json:"bill_info8"`
+	BillInfo8 string `json:"bill_info8,omitempty"`
 
 	// BillKey custom VA Number
 	// notes:: if the previous transaction with same bill key
 	// is still active, then Midtrans will return new random bill key
-	BillKey string `json:"bill_key"`
+	BillKey string `json:"bill_key,omitempty"`
 }
 
 // BCA specific parameters for BCA VA
