@@ -140,6 +140,147 @@ type Action struct {
 	Fields []string `json:"fields"`
 }
 
+// EChannel charge details using Mandiri Bill Payment
+type EChannel struct {
+	// BillInfo1 label 1 allows only 10 characters
+	// this is required
+	//
+	// Default: ""
+	BillInfo1 string `json:"bill_info1"`
+
+	// BillInfo2 value for label 1. allows only 30 characters
+	// this is required
+	//
+	// Default: ""
+	BillInfo2 string `json:"bill_info2"`
+
+	// BillInfo3 label 2 allows only 10 characters
+	//
+	// Default: ""
+	BillInfo3 string `json:"bill_info3"`
+
+	// BillInfo4 value for label 2. allows only 30 characters
+	//
+	// Default: ""
+	BillInfo4 string `json:"bill_info4"`
+
+	// BillInfo5 label 3 allows only 10 characters
+	//
+	// Default: ""
+	BillInfo5 string `json:"bill_info5"`
+
+	// BillInfo6 value for label 3. allows only 30 characters
+	//
+	// Default: ""
+	BillInfo6 string `json:"bill_info6"`
+
+	// BillInfo7 label 4 allows only 10 characters
+	//
+	// Default: ""
+	BillInfo7 string `json:"bill_info7"`
+
+	// BillInfo8 value for label 4. allows only 30 characters
+	//
+	// Default: ""
+	BillInfo8 string `json:"bill_info8"`
+
+	// BillKey custom VA Number
+	// notes:: if the previous transaction with same bill key
+	// is still active, then Midtrans will return new random bill key
+	BillKey string `json:"bill_key"`
+}
+
+// BCA specific parameters for BCA VA
+type BCA struct {
+	// SubCompanyCode BCA sub company code directed for this transactions
+	//
+	// Default: "00000"
+	SubCompanyCode string `json:"sub_company_code"`
+}
+
+// Permata specific parameters for Permata VA
+type Permata struct {
+	// RecipientName shown on the payment details
+	//
+	// Default: Merchant Name. e.g: PanduShop
+	RecipientName string `json:"recipient_name"`
+}
+
+// FreeTextMessage for message in language
+type FreeTextMessage struct {
+	// ID free text message in Bahasa Indonesia
+	ID string `json:"id"`
+
+	// EN free text message in English
+	EN string `json:"en"`
+}
+
+// FreeText list of free texts used for BCA VA
+type FreeText struct {
+	// Inquiry free texts shown during inquiry
+	Inquiry []*FreeTextMessage `json:"inquiry"`
+
+	// Payment free texts shown during payment
+	Payment []*FreeTextMessage `json:"payment"`
+}
+
+// BankTransfer charge details using bank transfer
+type BankTransfer struct {
+	// Bank name which processes bank transfer transaction
+	// this field is required
+	//
+	// Default: ""
+	Bank BankCode `json:"bank"`
+
+	// VANumber for customized virtual_account number
+	// notes::
+	// - BCA: accepts 6-11 digits
+	// - Permata: accepts 10 digits
+	// - BNI: accepts 8-12 digits
+	// - BRI: accepts 18 digits
+	//
+	// Default: ""
+	VANumber string `json:"va_number,omitempty"`
+
+	// FreeText list of free text
+	//
+	// Default: null
+	FreeText *FreeText `json:"free_text,omitempty"`
+
+	// BCA specific params for BCA VA
+	//
+	// Default: null
+	BCA *BCA `json:"bca,omitempty"`
+
+	// Permata specific params for Permata VA
+	//
+	// Default: null
+	Permata *Permata `json:"permata,omitempty"`
+}
+
+// BankTransferCreateParams parameters to create Bank Transfer transaction
+type BankTransferCreateParams struct {
+	// PaymentType set Bank Transfer payment method
+	//
+	// Default: ""
+	PaymentType PaymentType `json:"payment_type"`
+
+	// TransactionDetails the details of the specific transactions
+	TransactionDetails *TransactionDetail `json:"transaction_details"`
+
+	// ItemDetails details of items purchased by customer
+	ItemDetails []*ItemDetail `json:"item_details"`
+
+	// CustomerDetails detail of customer
+	CustomerDetails *CustomerDetail `json:"customer_details,omitempty"`
+
+	// BankTransfer charge details using bank transfer
+	BankTransfer *BankTransfer `json:"bank_transfer,omitempty"`
+
+	// EChannel charge details using Mandiri Bill Payment
+	EChannel *EChannel `json:"echannel,omitempty"`
+}
+
 // ChargeResponse charge response and notifications
 type ChargeResponse struct {
 	// ID of request
@@ -164,7 +305,7 @@ type ChargeResponse struct {
 	GrossAmount string `json:"gross_amount"`
 
 	// PaymentType transaction payment method
-	PaymentType string `json:"payment_type"`
+	PaymentType PaymentType `json:"payment_type"`
 
 	// TransactionTime timestamp of transaction in ISO 8601 format with timezone GMT+7
 	TransactionTime string `json:"transaction_time"`
@@ -190,6 +331,18 @@ type ChargeResponse struct {
 	// ChannelResponseMessage response message from payment channel provider
 	ChannelResponseMessage string `json:"channel_response_message"`
 
-	// Actions to take action payments
+	// Actions to take action payments e-wallet
 	Actions []*Action `json:"actions"`
+
+	// BillKey va_number for payment Bank Mandiri
+	BillKey string `json:"bill_key"`
+
+	// BillerCode company code for Bank Mandiri
+	BillerCode string `json:"biller_code"`
+
+	// PermataVANumber va_number for payment Permata Bank
+	PermataVANumber string `json:"permata_va_number"`
+
+	// VANumbers list va_number for payment Bank BCA, BRI, or BNI
+	VANumbers []*BankTransfer `json:"va_numbers"`
 }
