@@ -7,6 +7,7 @@ import (
 
 	xnd "github.com/pandudpn/go-payment-gateway/internal/xendit"
 	"github.com/pandudpn/go-payment-gateway/utils"
+	"github.com/pandudpn/go-payment-gateway/utils/validation"
 )
 
 const xndUri string = "https://api.xendit.co"
@@ -65,6 +66,9 @@ func (x *xendit) createEWalletCharge(ctx context.Context, e *xnd.EWallet) (*xnd.
 		return nil, ErrInvalidParameter
 	}
 
+	// create validation field
+	validation := validation.New(string(e.Currency))
+
 	// check required parameter in channelProperties for specific ChannelCode
 	switch e.ChannelCode {
 	case xnd.EWalletDANA, xnd.EWalletLinkAja, xnd.EWalletShopeePay:
@@ -80,23 +84,35 @@ func (x *xendit) createEWalletCharge(ctx context.Context, e *xnd.EWallet) (*xnd.
 	case xnd.EWalletOVO:
 		// when checkoutMethod is OneTimePayment
 		// required phoneNumber to sent notification payments to user apps
-		if e.CheckoutMethod == xnd.OneTimePayment && reflect.ValueOf(e.ChannelProperties.MobileNumber).IsZero() {
-			utils.Log.Error("parameter MobileNumber is required for ChannelCode OVO with CheckoutMethod one time payment")
-			return nil, ErrInvalidParameter
+		if e.CheckoutMethod == xnd.OneTimePayment {
+			// phoneNumber is exists
+			if reflect.ValueOf(e.ChannelProperties.MobileNumber).IsZero() {
+				utils.Log.Error("parameter MobileNumber is required for ChannelCode OVO with CheckoutMethod one time payment")
+				return nil, ErrInvalidParameter
+			}
+
+			// validation indonesian phoneNumber
+			if !validation.PhoneNumber(e.ChannelProperties.MobileNumber) {
+				utils.Log.Error("MobileNumber invalid, please start with +62 for ID or start with +63 for PH or Max Length 13 digits Numeric")
+				return nil, ErrInvalidPhoneNumber
+			}
 		}
 
 		// for checkoutMethod tokenized
-		if e.CheckoutMethod == xnd.TokenizedPayment &&
-			reflect.ValueOf(e.ChannelProperties.SuccessRedirectURL).IsZero() &&
-			reflect.ValueOf(e.ChannelProperties.FailureRedirectURL).IsZero() {
+		if e.CheckoutMethod == xnd.TokenizedPayment {
+			// check success redirect and failure redirect is not exists
+			if reflect.ValueOf(e.ChannelProperties.SuccessRedirectURL).IsZero() &&
+				reflect.ValueOf(e.ChannelProperties.FailureRedirectURL).IsZero() {
 
-			utils.Log.Error("one or more parameters is required")
-			return nil, ErrInvalidParameter
-		}
+				utils.Log.Error("one or more parameters is required")
+				return nil, ErrInvalidParameter
 
-		// default value of redeem points when not exists
-		if reflect.ValueOf(e.ChannelProperties.RedeemPoints).IsZero() {
-			e.ChannelProperties.RedeemPoints = xnd.RedeemNone
+			}
+
+			// default value of redeem points when not exists
+			if reflect.ValueOf(e.ChannelProperties.RedeemPoints).IsZero() {
+				e.ChannelProperties.RedeemPoints = xnd.RedeemNone
+			}
 		}
 	}
 
