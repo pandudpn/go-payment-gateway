@@ -1,28 +1,33 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 	"github.com/pandudpn/go-payment-gateway"
-	"github.com/pandudpn/go-payment-gateway/internal/midtrans"
+	"github.com/pandudpn/go-payment-gateway/gateway/midtrans"
 )
+
+const sandBoxServerKey string = "SB-Mid-server-ZKoMj1ghHnJqKQy7kNyQhUOu"
+const sandBoxClientKey string = "SB-Mid-client-B5YDy_W5MCk53L5U"
 
 func main() {
 	var err error
-	payment := pg.New()
-	err = payment.SetMidtransCredentials("SB-Mid-server-ZKoMj1ghHnJqKQy7kNyQhUOu")
-	if err != nil {
-		panic(err)
+
+	opts := &pg.Options{
+		ServerKey: sandBoxServerKey,
+		ClientId:  sandBoxClientKey,
 	}
 
-	err = payment.SetXenditCredentials("xnd_development_spnIw1pkbX4akj5wfZ9DBAmYIRFlikR1fmiROpTk51IWgek4JwfW8YcKSJ1rUMU")
+	opts, err = pg.NewOption(opts)
 	if err != nil {
-		panic(err)
+		log.Fatalln("create payment gateway options failed with error:", err)
 	}
+
+	log.Println(opts.Logging)
 
 	e := &midtrans.EWallet{
-		PaymentType: midtrans.EWalletShopeePay,
+		PaymentType: midtrans.PaymentTypeShopeePay,
 		TransactionDetails: &midtrans.TransactionDetail{
 			OrderID:     uuid.New().String(),
 			GrossAmount: 10000,
@@ -41,15 +46,10 @@ func main() {
 		},
 	}
 
-	mds, err := payment.Midtrans()
+	res, err := midtrans.CreateEWalletCharge(e, opts)
 	if err != nil {
-		panic(err)
+		log.Fatalln("failed to create e-wallet charge with error:", err)
 	}
 
-	charge, err := mds.CreateEWalletCharge(e)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("midtrans", *charge)
+	log.Println("response", *res)
 }

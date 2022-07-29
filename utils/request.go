@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/pandudpn/go-payment-gateway"
 )
 
 type request struct {
@@ -42,7 +44,7 @@ func NewRequest(method, url string, payload []byte) (RequestInterface, error) {
 	// create instance of http.Request
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payload))
 	if err != nil {
-		Log.Errorf("error create http.Request with message %s", err)
+		pg.Log.Errorf("error create http.Request with message %s", err)
 		return nil, err
 	}
 
@@ -93,11 +95,11 @@ func (r *request) DoRequest(ctx context.Context) ([]byte, int, error) {
 		return nil, http.StatusInternalServerError, ErrHttpClient
 	}
 
-	Log.Printf("method=%s url=%s", r.request.Method, r.request.URL.String())
-	Log.Printf("headers=%v", r.request.Header)
+	pg.Log.Printf("method=%s url=%s", r.request.Method, r.request.URL.String())
+	pg.Log.Printf("headers=%v", r.request.Header)
 	if r.request.Body != nil {
 		reqBody, _ := ioutil.ReadAll(r.request.Body)
-		Log.Printf("request_body=%s", string(reqBody))
+		pg.Log.Printf("request_body=%s", string(reqBody))
 
 		// put body
 		r.request.Body = ioutil.NopCloser(bytes.NewBuffer(reqBody))
@@ -105,20 +107,20 @@ func (r *request) DoRequest(ctx context.Context) ([]byte, int, error) {
 
 	resBody, err := r.client.Do(r.request.WithContext(ctx))
 	if err != nil {
-		Log.Error(err)
+		pg.Log.Error(err)
 		return nil, http.StatusInternalServerError, err
 	}
 	defer resBody.Body.Close()
 
-	Log.Printf("response_status_code=%d", resBody.StatusCode)
+	pg.Log.Printf("response_status_code=%d", resBody.StatusCode)
 
 	body, err := ioutil.ReadAll(resBody.Body)
 	if err != nil {
-		Log.Error("parse response failed")
+		pg.Log.Error("parse response failed")
 		return nil, resBody.StatusCode, err
 	}
 
-	Log.Printf("response_body=%s", string(body))
+	pg.Log.Printf("response_body=%s", string(body))
 
 	return body, resBody.StatusCode, nil
 }

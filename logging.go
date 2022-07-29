@@ -1,10 +1,10 @@
-package utils
+package pg
 
 import (
 	"fmt"
 	"os"
 	"strings"
-	
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,22 +23,22 @@ var Log Logging
 type Logging interface {
 	// Print write debug message without format into stdout
 	Print(args ...interface{})
-	
+
 	// Printf write debug message with format into stdout
 	Printf(format string, args ...interface{})
-	
+
 	// Println write debug message with new line into stdout
 	Println(args ...interface{})
-	
+
 	// Warn write warn message without format into stdout
 	Warn(args ...interface{})
-	
+
 	// Warnf write warn message with format into stdout
 	Warnf(format string, args ...interface{})
-	
+
 	// Error write error message without format into stdout
 	Error(args ...interface{})
-	
+
 	// Errorf print error message with format
 	Errorf(format string, args ...interface{})
 }
@@ -47,7 +47,7 @@ func (l *logger) Print(args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Print(args...)
 }
 
@@ -55,7 +55,7 @@ func (l *logger) Printf(format string, args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Printf(format, args...)
 }
 
@@ -63,7 +63,7 @@ func (l *logger) Println(args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Println(args...)
 }
 
@@ -71,7 +71,7 @@ func (l *logger) Warn(args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Warn(args...)
 }
 
@@ -79,7 +79,7 @@ func (l *logger) Warnf(format string, args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Warnf(format, args...)
 }
 
@@ -87,7 +87,7 @@ func (l *logger) Error(args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Error(args...)
 }
 
@@ -95,7 +95,7 @@ func (l *logger) Errorf(format string, args ...interface{}) {
 	if !l.log {
 		return
 	}
-	
+
 	l.Logger.Errorf(format, args...)
 }
 
@@ -120,7 +120,7 @@ func setLogger() *logrus.Logger {
 	}
 	// set logrus into Log variable
 	Log = &logger{true, l}
-	
+
 	return l
 }
 
@@ -139,7 +139,7 @@ func (l *logFormatter) Format(e *logrus.Entry) ([]byte, error) {
 	var (
 		levelColor int
 	)
-	
+
 	switch e.Level {
 	case logrus.DebugLevel, logrus.TraceLevel:
 		levelColor = 35 // purple
@@ -150,10 +150,10 @@ func (l *logFormatter) Format(e *logrus.Entry) ([]byte, error) {
 	default:
 		levelColor = 34 // blue
 	}
-	
+
 	return []byte(
 		fmt.Sprintf(
-			"time=%s level=\u001B[%dm%s\u001B[0m message=%s\n",
+			"time=%s level=\u001B[%dm%s\u001B[0m %s\n",
 			e.Time.Format(l.TimestampFormat),
 			levelColor,
 			strings.ToUpper(e.Level.String()),
