@@ -1,8 +1,9 @@
-package pg
+package pg_test
 
 import (
 	"testing"
 
+	"github.com/pandudpn/go-payment-gateway"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -10,13 +11,13 @@ func TestNewOption_Success(t *testing.T) {
 	var err error
 
 	expectedResult := getMockOptionsFalse()
-	opts := &Options{
+	opts := &pg.Options{
 		ServerKey: "abc",
 		ClientId:  "abc",
-		Logging:   &False,
+		Logging:   &pg.False,
 	}
 
-	opts, err = NewOption(opts)
+	opts, err = pg.NewOption(opts)
 	expectedResult.ApiCall = opts.ApiCall
 
 	assert.Equal(t, expectedResult, opts)
@@ -24,8 +25,8 @@ func TestNewOption_Success(t *testing.T) {
 }
 
 func TestNewOption_ErrorMissingCredentials(t *testing.T) {
-	opts, err := NewOption()
+	opts, err := pg.NewOption()
 
 	assert.Nil(t, opts, "options should be nil")
-	assert.NotNil(t, err, "error should not be nil")
+	assert.NotNil(t, err, "error should not to be nil")
 }

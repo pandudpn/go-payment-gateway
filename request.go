@@ -27,6 +27,9 @@ type ApiRequest struct {
 type ApiRequestInterface interface {
 	// Call do request to target
 	Call(ctx context.Context, httpMethod, url string, header http.Header, body, result interface{}) error
+
+	// DoRequest to target
+	DoRequest(req *http.Request, result interface{}) error
 }
 
 // DefaultApiRequest is default of ApiRequest instance
@@ -62,13 +65,11 @@ func (a *ApiRequest) Call(ctx context.Context, httpMethod, url string, header ht
 	}
 
 	// generate New Http.Request
-	req, err := http.NewRequest(httpMethod, url, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(ctx, httpMethod, url, bytes.NewBuffer(reqBody))
 	if err != nil {
 		a.Logging.Errorf("cannot create midtrans request: %s", err)
 		return err
 	}
-	// set options
-	req.WithContext(ctx)
 
 	// set header
 	if header != nil {
@@ -84,11 +85,11 @@ func (a *ApiRequest) Call(ctx context.Context, httpMethod, url string, header ht
 	a.logHttpHeader(req.Header)
 	a.Logging.Println("BODY:", string(reqBody), "\n")
 
-	return a.doRequest(req, result)
+	return a.DoRequest(req, result)
 }
 
-// doRequest to client with some params
-func (a *ApiRequest) doRequest(req *http.Request, result interface{}) error {
+// DoRequest to client with some params
+func (a *ApiRequest) DoRequest(req *http.Request, result interface{}) error {
 	start := time.Now()
 
 	// request to client target
@@ -111,6 +112,7 @@ func (a *ApiRequest) doRequest(req *http.Request, result interface{}) error {
 
 	// log response
 	a.Logging.Println("================================= RESPONSE =================================")
+	a.Logging.Println(res.Proto, res.Status)
 	a.logHttpHeader(res.Header)
 	a.Logging.Println("BODY:", string(resBody))
 

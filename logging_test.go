@@ -1,29 +1,31 @@
-package pg
+package pg_test
 
 import (
 	"testing"
+
+	"github.com/pandudpn/go-payment-gateway"
 )
 
 func TestLogger_Enabled(t *testing.T) {
-	NewLogger()
+	pg.NewLogger()
 
-	Log.Errorf("err")
-	Log.Error("err")
-	Log.Println("println")
-	Log.Printf("printf")
-	Log.Print("print")
-	Log.Warnf("warnf")
-	Log.Warn("warn")
+	pg.Log.Errorf("err")
+	pg.Log.Error("err")
+	pg.Log.Println("println")
+	pg.Log.Printf("printf")
+	pg.Log.Print("print")
+	pg.Log.Warnf("warnf")
+	pg.Log.Warn("warn")
 }
 
 func TestLogger_Disabled(t *testing.T) {
-	DisableLogging()
+	pg.DisableLogging()
 
-	Log.Errorf("err")
-	Log.Error("err")
-	Log.Println("println")
-	Log.Printf("printf")
-	Log.Print("print")
-	Log.Warnf("warnf")
-	Log.Warn("warn")
+	pg.Log.Errorf("err")
+	pg.Log.Error("err")
+	pg.Log.Println("println")
+	pg.Log.Printf("printf")
+	pg.Log.Print("print")
+	pg.Log.Warnf("warnf")
+	pg.Log.Warn("warn")
 }
