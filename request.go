@@ -75,6 +75,7 @@ func (a *ApiRequest) Call(ctx context.Context, httpMethod, url string, header ht
 		req.Header = header
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", fmt.Sprintf("go-payment-gateway/%s", version))
 
 	// log request
