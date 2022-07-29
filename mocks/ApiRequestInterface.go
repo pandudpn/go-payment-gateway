@@ -28,6 +28,20 @@ func (_m *ApiRequestInterface) Call(ctx context.Context, httpMethod string, url 
 	return r0
 }
 
+// DoRequest provides a mock function with given fields: req, result
+func (_m *ApiRequestInterface) DoRequest(req *http.Request, result interface{}) error {
+	ret := _m.Called(req, result)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*http.Request, interface{}) error); ok {
+		r0 = rf(req, result)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 type mockConstructorTestingTNewApiRequestInterface interface {
 	mock.TestingT
 	Cleanup(func())
