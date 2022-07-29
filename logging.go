@@ -141,8 +141,6 @@ func (l *logFormatter) Format(e *logrus.Entry) ([]byte, error) {
 	)
 
 	switch e.Level {
-	case logrus.DebugLevel, logrus.TraceLevel:
-		levelColor = 35 // purple
 	case logrus.WarnLevel:
 		levelColor = 33 // yellow
 	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:

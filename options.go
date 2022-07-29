@@ -4,7 +4,10 @@ import (
 	"reflect"
 )
 
-var True bool = true
+var (
+	True  bool = true
+	False bool = false
+)
 
 // Options is the wrap of the params needed for API Call
 type Options struct {
