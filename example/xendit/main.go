@@ -1,41 +1,42 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	
 	"github.com/google/uuid"
 	"github.com/pandudpn/go-payment-gateway"
-	"github.com/pandudpn/go-payment-gateway/internal/xendit"
+	"github.com/pandudpn/go-payment-gateway/gateway/xendit"
 )
+
+const sandBoxServerKey string = "xnd_development_spnIw1pkbX4akj5wfZ9DBAmYIRFlikR1fmiROpTk51IWgek4JwfW8YcKSJ1rUMU"
+const sandBoxClientKey string = "xnd_public_development_NLo6NyaSZ5dj8RmD6zJEmFkYnxMa8ZkcGnWHj1FZbuRPzPQsC5N4F5caHxDYC2z"
 
 func main() {
 	var err error
-	payment := pg.New()
 	
-	err = payment.SetXenditCredentials("xnd_development_spnIw1pkbX4akj5wfZ9DBAmYIRFlikR1fmiROpTk51IWgek4JwfW8YcKSJ1rUMU")
-	if err != nil {
-		panic(err)
+	opts := &pg.Options{
+		ServerKey: sandBoxServerKey,
+		ClientId:  sandBoxClientKey,
 	}
 	
-	xndEWallet := &xendit.EWallet{
-		ChannelCode: xendit.EWalletOVO,
+	opts, err = pg.NewOption(opts)
+	if err != nil {
+		log.Fatalln("create payment gateway options failed with error:", err)
+	}
+	
+	e := &xendit.EWallet{
+		ChannelCode: xendit.ChannelCodeShopeePay,
 		Amount:      10000,
 		ReferenceID: uuid.NewString(),
 		ChannelProperties: &xendit.EWalletChannelProperties{
-			MobileNumber:       "6281234567890abc",
 			SuccessRedirectURL: "https://www.google.com",
 		},
 	}
 	
-	xnd, err := payment.Xendit()
+	res, err := xendit.CreateEWalletCharge(e, opts)
 	if err != nil {
-		panic(err)
+		log.Fatalln("failed to create e-wallet charge with error:", err)
 	}
 	
-	charge, err := xnd.CreateEWalletCharge(xndEWallet)
-	if err != nil {
-		panic(err)
-	}
-	
-	fmt.Println("charge", *charge)
+	log.Println("response", *res)
 }
