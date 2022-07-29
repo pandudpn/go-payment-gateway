@@ -24,8 +24,6 @@ func main() {
 		log.Fatalln("create payment gateway options failed with error:", err)
 	}
 
-	log.Println(opts.Logging)
-
 	e := &midtrans.EWallet{
 		PaymentType: midtrans.PaymentTypeShopeePay,
 		TransactionDetails: &midtrans.TransactionDetail{
