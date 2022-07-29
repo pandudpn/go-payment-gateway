@@ -1,16 +1,5 @@
 package midtrans
 
-type request struct {
-	// uri http target to charge payments
-	uri string
-
-	// username for authentication basic
-	username string
-
-	// params request to charge payment
-	params []byte
-}
-
 // TransactionDetail for customer
 type TransactionDetail struct {
 	// OrderID is Reference ID for midtrans
