@@ -1,0 +1,35 @@
+name: "Test Coverage"
+
+on:
+  pull_request_target:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.18]
+        os: [ubuntu-latest]
+    name: Test Coverage on ${{ matrix.os }} @ Go ${{ matrix.go-version }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          go mod download
+      - name: Run Unit tests
+        run: |
+          go test -race -covermode atomic -coverprofile=coverage.out ./...
+      - name: Install goveralls
+        run: go install github.com/mattn/goveralls@latest
+      - name: Send coverage
+        run: goveralls -coverprofile=coverage.out -service=github
