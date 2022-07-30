@@ -20,6 +20,8 @@ func validationParams(params interface{}) error {
 		return validationCardToken(params.(*CardToken))
 	case *CardRegister:
 		return validationCardRegister(params.(*CardRegister))
+	case *CardPayment:
+		return validationCardPayment(params.(*CardPayment))
 	default:
 		return pg.ErrUnimplemented
 	}
@@ -174,4 +176,41 @@ func validationCard(cn, cem, cey, cvv string) error {
 	}
 
 	return nil
+}
+
+// validationCardPayment params required for create card token
+func validationCardPayment(cp *CardPayment) error {
+	var err = pg.ErrInvalidParameter
+
+	// transactionDetails not exists
+	if cp.TransactionDetails == nil || reflect.ValueOf(cp.TransactionDetails.OrderID).IsZero() || cp.TransactionDetails.GrossAmount < 100 {
+		return fmt.Errorf("%s. one of midtrans.TransactionDetail is missing or invalid", err)
+	}
+
+	// items not exists
+	if cp.ItemDetails == nil || len(cp.ItemDetails) < 1 {
+		return fmt.Errorf("%s. []midtrans.ItemDetail is required", err)
+	}
+
+	// make sure only gopay or shopeepay payment type
+	if !checkPaymentTypeCard(cp.PaymentType) {
+		return fmt.Errorf("invalid payment_type. possible value only 'PaymentTypeCard'")
+	}
+
+	// credit_card body not exists
+	if cp.CreditCard == nil {
+		return fmt.Errorf("midtrans.CreditCard is missing")
+	}
+
+	// required field CreditCard.TokenID
+	if reflect.ValueOf(cp.CreditCard.TokenID).IsZero() {
+		return fmt.Errorf("midtrans.CreditCard.TokenID is missing")
+	}
+
+	return nil
+}
+
+// checkPaymentTypeCard eligible for payment type CreditCard
+func checkPaymentTypeCard(pt PaymentType) bool {
+	return pt == PaymentTypeCard
 }

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/pandudpn/go-payment-gateway"
+	"github.com/pandudpn/go-payment-gateway/utils"
 )
 
 // queryParam for createToken or registerToken
@@ -90,6 +91,48 @@ func (m *midtrans) createCardRegister(ctx context.Context) (*CardResponse, error
 
 	m.uri += fmt.Sprintf("%s?%s", createRegisterCardUri, string(m.params))
 	err = m.opts.ApiCall.Call(ctx, http.MethodGet, m.uri, header, nil, &chargeRes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &chargeRes, nil
+}
+
+// CreateCardCharge will create a new instance of CardPayment Register
+func CreateCardCharge(cp *CardPayment, opts *pg.Options) (*ChargeResponse, error) {
+	m, err := createChargeMidtrans(cp, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
+	defer cancel()
+
+	return m.createCardCharge(ctx)
+}
+
+// CreateCardChargeWithContext will create a new instance of CardPayment Register with context
+func CreateCardChargeWithContext(ctx context.Context, cp *CardPayment, opts *pg.Options) (*ChargeResponse, error) {
+	m, err := createChargeMidtrans(cp, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return m.createCardCharge(ctx)
+}
+
+func (m *midtrans) createCardCharge(ctx context.Context) (*ChargeResponse, error) {
+	var (
+		chargeRes ChargeResponse
+		err       error
+		header    = make(http.Header)
+	)
+
+	// set basic auth
+	header.Set("Authorization", utils.SetBasicAuthorization(m.opts.ServerKey, ""))
+
+	m.uri += chargeUri
+	err = m.opts.ApiCall.Call(ctx, http.MethodPost, m.uri, header, m.params, &chargeRes)
 	if err != nil {
 		return nil, err
 	}

@@ -86,7 +86,7 @@ func bankTransferCharge(opts *pg.Options) {
 	}
 }
 
-func createCardToken(cr *midtrans.CardResponse, opts *pg.Options) {
+func createCardToken(cr *midtrans.CardResponse, opts *pg.Options) *midtrans.CardResponse {
 	var ct = new(midtrans.CardToken)
 
 	if cr == nil {
@@ -102,9 +102,11 @@ func createCardToken(cr *midtrans.CardResponse, opts *pg.Options) {
 	res, err := midtrans.CreateCardToken(ct, opts)
 	if err != nil {
 		log.Fatalln("failed to create card_token with error:", err)
+		return nil
 	}
 
 	log.Println("response card_token", *res)
+	return res
 }
 
 func createRegisterCard(opts *pg.Options) *midtrans.CardResponse {
@@ -123,6 +125,41 @@ func createRegisterCard(opts *pg.Options) *midtrans.CardResponse {
 
 	log.Println("response register_card", *res)
 	return res
+}
+
+func creditCardCharge(opts *pg.Options) {
+	// register card token for credit_card or debit_card
+	cr := createRegisterCard(opts)
+
+	// create card token for credit_card or debit_card
+	cr = createCardToken(cr, opts)
+
+	cp := &midtrans.CardPayment{
+		PaymentType: midtrans.PaymentTypeCard,
+		TransactionDetails: &midtrans.TransactionDetail{
+			OrderID:     uuid.New().String(),
+			GrossAmount: 10000,
+		},
+		ItemDetails: []*midtrans.ItemDetail{
+			{
+				ID:       uuid.NewString(),
+				Price:    10000,
+				Name:     "abc",
+				Quantity: 1,
+			},
+		},
+		CreditCard: &midtrans.CreditCard{
+			TokenID:        cr.TokenID,
+			Authentication: true,
+		},
+	}
+
+	res, err := midtrans.CreateCardCharge(cp, opts)
+	if err != nil {
+		log.Fatalln("failed to create credit_card charge with error:", err)
+	}
+
+	log.Println("response credit_card charge", *res)
 }
 
 func main() {
@@ -144,9 +181,6 @@ func main() {
 	// example bank_transfer (virtual account)
 	// bankTransferCharge(opts)
 
-	// register card token for credit_card or debit_card
-	cr := createRegisterCard(opts)
-
-	// create card token for credit_card or debit_card
-	createCardToken(cr, opts)
+	// create card charge transaction
+	creditCardCharge(opts)
 }
