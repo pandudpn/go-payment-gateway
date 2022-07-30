@@ -2,6 +2,9 @@
 
 # GO Payment Gateway
 
+[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://pkg.go.dev/github.com/pandudpn/go-payment-gateway)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pandudpn/go-payment-gateway)](https://goreportcard.com/report/github.com/pandudpn/go-payment-gateway)
+
 SDK GO for Payment Gateway in Indonesia. Currently only supports [Midtrans Core API](https://api-docs.midtrans.com/), [Xendit API](https://developers.xendit.co/api-reference), and [OY! Indonesia](https://api-docs.oyindonesia.com/).
 
 ---
