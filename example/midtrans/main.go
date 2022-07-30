@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	
+
 	"github.com/google/uuid"
 	"github.com/pandudpn/go-payment-gateway"
 	"github.com/pandudpn/go-payment-gateway/gateway/midtrans"
@@ -31,12 +31,12 @@ func ewalletCharge(opts *pg.Options) {
 			CallbackURL:    "https://playground.api.pandudpn.id/psj",
 		},
 	}
-	
+
 	res, err := midtrans.CreateEWalletCharge(e, opts)
 	if err != nil {
 		log.Fatalln("failed to create e-wallet one_time_payment charge with error:", err)
 	}
-	
+
 	log.Println("response e-wallet one_time_payment charge", *res)
 }
 
@@ -66,21 +66,21 @@ func bankTransferCharge(opts *pg.Options) {
 		// 	VANumber: "1234567890",
 		// },
 	}
-	
+
 	res, err := midtrans.CreateBankTransferCharge(bt, opts)
 	if err != nil {
 		log.Fatalln("failed to create bank_transfer charge with error:", err)
 	}
-	
+
 	log.Println("response bank_transfer charge", *res)
 	if len(res.VANumbers) > 0 {
 		log.Println("virtual account", bt.BankTransfer.Bank, res.VANumbers[0].VANumber)
 	}
-	
+
 	if res.PermataVANumber != "" {
 		log.Println("virtual account permata", res.PermataVANumber)
 	}
-	
+
 	if res.BillKey != "" {
 		log.Println("virtual account mandiri", res.BillerCode+"-"+res.BillKey)
 	}
@@ -88,20 +88,20 @@ func bankTransferCharge(opts *pg.Options) {
 
 func main() {
 	var err error
-	
+
 	opts := &pg.Options{
 		ServerKey: sandBoxServerKey,
 		ClientId:  sandBoxClientKey,
 	}
-	
+
 	opts, err = pg.NewOption(opts)
 	if err != nil {
 		log.Fatalln("create payment gateway options failed with error:", err)
 	}
-	
+
 	// example e-wallet one_time_payment
 	ewalletCharge(opts)
-	
+
 	// example bank_transfer (virtual account)
 	bankTransferCharge(opts)
 }
