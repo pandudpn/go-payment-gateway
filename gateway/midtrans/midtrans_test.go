@@ -3,6 +3,7 @@ package midtrans_test
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 
 	pg "github.com/pandudpn/go-payment-gateway"
 	"github.com/pandudpn/go-payment-gateway/gateway/midtrans"
@@ -21,8 +22,24 @@ func getMockUrlSandBox() string {
 	return "https://api.sandbox.midtrans.com/v2/charge"
 }
 
+func getMockUrlCardTokenSandBox() string {
+	return "https://api.sandbox.midtrans.com/v2/token"
+}
+
+func getMockUrlRegisterCardSandBox() string {
+	return "https://api.sandbox.midtrans.com/v2/card/register"
+}
+
 func getMockUrlProduction() string {
 	return "https://api.midtrans.com/v2/charge"
+}
+
+func getMockUrlCardTokenProduction() string {
+	return "https://api.midtrans.com/v2/token"
+}
+
+func getMockUrlRegisterCardProduction() string {
+	return "https://api.midtrans.com/v2/card/register"
 }
 
 func getMockOptionsSandBox() *pg.Options {
@@ -149,4 +166,101 @@ func getMockChargeResponseBankTransfer() *midtrans.ChargeResponse {
 			},
 		},
 	}
+}
+
+func getMockParamsCardToken() *midtrans.CardToken {
+	return &midtrans.CardToken{
+		CardNumber:   "5211111111111117",
+		CardCvv:      "123",
+		CardExpYear:  "2022",
+		CardExpMonth: "12",
+	}
+}
+
+func getMockParamsCardRegisterBytes() []byte {
+	b, _ := json.Marshal(getMockParamsCardToken())
+	return b
+}
+
+func getMockParamsCardTokenWithSavedTokenId() *midtrans.CardToken {
+	return &midtrans.CardToken{
+		TokenID: "token-id-testing",
+		CardCvv: "123",
+	}
+}
+
+func getMockParamsCardTokenWithSavedTokenIdBytes() []byte {
+	b, _ := json.Marshal(getMockParamsCardTokenWithSavedTokenId())
+	return b
+}
+
+func getMockParamsRegisterCard() *midtrans.CardRegister {
+	return &midtrans.CardRegister{
+		CardNumber:   "5211111111111117",
+		CardCvv:      "123",
+		CardExpYear:  "2022",
+		CardExpMonth: "12",
+	}
+}
+
+func getMockParamsRegisterCardBytes() []byte {
+	b, _ := json.Marshal(getMockParamsRegisterCard())
+	return b
+}
+
+func getMockQueryParamsCardToken() string {
+	u := url.Values{}
+	u.Set("card_cvv", "123")
+	u.Set("card_exp_month", "12")
+	u.Set("card_exp_year", "2022")
+	u.Set("card_number", "5211111111111117")
+	u.Set("client_key", clientIdSandBox)
+
+	return u.Encode()
+}
+
+func getMockQueryParamsCardTokenBytes() []byte {
+	b, _ := json.Marshal(getMockQueryParamsCardToken())
+	return b
+}
+
+func getMockQueryParamsCardTokenBySavedTokenId() string {
+	u := url.Values{}
+	u.Set("card_cvv", "123")
+	u.Set("client_key", clientIdSandBox)
+	u.Set("token_id", "token-id-testing")
+
+	return u.Encode()
+}
+
+func getMockQueryParamsCardTokenBySavedTokenIdBytes() []byte {
+	b, _ := json.Marshal(getMockQueryParamsCardTokenBySavedTokenId())
+	return b
+}
+
+func getMockParamsCardCharge() *midtrans.CardPayment {
+	return &midtrans.CardPayment{
+		PaymentType: midtrans.PaymentTypeCard,
+		TransactionDetails: &midtrans.TransactionDetail{
+			OrderID:     "order-id-test",
+			GrossAmount: 10000,
+		},
+		ItemDetails: []*midtrans.ItemDetail{
+			{
+				ID:       "item-id",
+				Price:    10000,
+				Name:     "abc",
+				Quantity: 1,
+			},
+		},
+		CreditCard: &midtrans.CreditCard{
+			TokenID:        "token-id-testing",
+			Authentication: true,
+		},
+	}
+}
+
+func getMockParamsCardChargeBytes() []byte {
+	b, _ := json.Marshal(getMockParamsCardCharge())
+	return b
 }
