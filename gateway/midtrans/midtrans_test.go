@@ -1,12 +1,9 @@
 package midtrans_test
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
 	pg "github.com/pandudpn/go-payment-gateway"
 	"github.com/pandudpn/go-payment-gateway/gateway/midtrans"
 )
@@ -58,16 +55,6 @@ func getMockHeaderProduction() http.Header {
 	header.Set("Authorization", "Basic Y2xpZW50X3NlY3JldDo=")
 
 	return header
-}
-
-func getMockHttpRequest() *http.Request {
-	req, _ := http.NewRequest(http.MethodPost, getMockUrlSandBox(), bytes.NewBuffer(getMockParamsEWalletBytes()))
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Authorization", "Basic c2ItY2xpZW50X3NlY3JldDo=")
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", fmt.Sprintf("go-payment-gateway/%s", pg.Version))
-
-	return req
 }
 
 func getMockParamsEWallet() *midtrans.EWallet {
@@ -125,7 +112,7 @@ func getMockParamsBankTransfer() *midtrans.BankTransferCreateParams {
 		},
 		ItemDetails: []*midtrans.ItemDetail{
 			{
-				ID:       uuid.NewString(),
+				ID:       "item-id",
 				Price:    10000,
 				Name:     "abc",
 				Quantity: 1,
@@ -136,6 +123,11 @@ func getMockParamsBankTransfer() *midtrans.BankTransferCreateParams {
 			VANumber: "2122274139",
 		},
 	}
+}
+
+func getMockParamsBankTransferBytes() []byte {
+	b, _ := json.Marshal(getMockParamsBankTransfer())
+	return b
 }
 
 func getMockChargeResponseBankTransfer() *midtrans.ChargeResponse {
