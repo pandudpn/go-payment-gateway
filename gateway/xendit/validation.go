@@ -17,7 +17,7 @@ func validationPhoneNumberCustomer(country, phone string) bool {
 	var phoneRegexString = "^[62]+[0-9]"
 
 	// when country is from PH (philippines)
-	if country == "PH" {
+	if country == "PHP" {
 		phoneRegexString = "^[63]+[0-9]"
 	}
 	phoneRegex := regexp.MustCompile(phoneRegexString)
@@ -67,7 +67,7 @@ func validationEWallet(e *EWallet) error {
 
 	// make sure only ovo, linkaja, shopee, and dana channel code
 	if !checkChannelCodeEWallet(e.ChannelCode) {
-		return fmt.Errorf("invalid payment_type. possible values are 'PaymentTypeGopay' or 'PaymentTypeShopeePay'")
+		return fmt.Errorf("invalid channel_code. possible values are 'ChannelCodeDANA', 'ChannelCodeOVO', 'ChannelCodeLinkAja' or 'ChannelCodeShopeePay'")
 	}
 
 	// check minimum amount
@@ -88,7 +88,7 @@ func validationEWallet(e *EWallet) error {
 		}
 
 		// default value of redeem points when not exists
-		if e.ChannelCode == ChannelCodeShopeePay && reflect.ValueOf(e.ChannelProperties.RedeemPoints).IsZero() {
+		if e.ChannelCode == ChannelCodeShopeePay && e.CheckoutMethod == TokenizedPayment && reflect.ValueOf(e.ChannelProperties.RedeemPoints).IsZero() {
 			e.ChannelProperties.RedeemPoints = RedeemNone
 		}
 	case ChannelCodeOVO:
@@ -109,7 +109,7 @@ func validationEWallet(e *EWallet) error {
 		// for checkoutMethod tokenized
 		if e.CheckoutMethod == TokenizedPayment {
 			// check success redirect and failure redirect is not exists
-			if reflect.ValueOf(e.ChannelProperties.SuccessRedirectURL).IsZero() &&
+			if reflect.ValueOf(e.ChannelProperties.SuccessRedirectURL).IsZero() ||
 				reflect.ValueOf(e.ChannelProperties.FailureRedirectURL).IsZero() {
 
 				return fmt.Errorf("%s. ChannelProperties.SuccessRedirectURL and ChannelProperties.FailureRedirectURL is required", err)
