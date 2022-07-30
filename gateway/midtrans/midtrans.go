@@ -2,6 +2,7 @@ package midtrans
 
 import (
 	"encoding/json"
+	"reflect"
 	"strings"
 
 	"github.com/pandudpn/go-payment-gateway"
@@ -31,7 +32,7 @@ type midtrans struct {
 
 func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, error) {
 	// return an error when params not exists
-	if params == nil {
+	if params == nil || (reflect.ValueOf(params).Kind() == reflect.Ptr && reflect.ValueOf(params).IsNil()) {
 		return nil, pg.ErrMissingParameter
 	}
 
@@ -47,10 +48,7 @@ func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, erro
 		return nil, pg.ErrInvalidCredentials
 	}
 
-	payload, err := json.Marshal(params)
-	if err != nil {
-		return nil, err
-	}
+	payload, _ := json.Marshal(params)
 
 	// create instance midtrans
 	m := &midtrans{

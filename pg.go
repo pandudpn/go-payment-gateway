@@ -2,5 +2,5 @@ package pg
 
 type PaymentGatewayProvider int
 
-// version library
-const version string = "v1.0.0"
+// Version library go-pg
+const Version string = "v1.0.0"
