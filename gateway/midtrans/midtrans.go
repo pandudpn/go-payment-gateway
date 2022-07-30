@@ -2,6 +2,7 @@ package midtrans
 
 import (
 	"encoding/json"
+	"net/url"
 	"reflect"
 	"strings"
 
@@ -17,6 +18,12 @@ const (
 
 	// uri for charge transaction
 	chargeUri = "/v2/charge"
+
+	// uri for create CardToken
+	createCardTokenUri = "/v2/token"
+
+	// uri for register CardToken
+	createRegisterCardUri = "/v2/card/register"
 )
 
 type midtrans struct {
@@ -48,7 +55,40 @@ func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, erro
 		return nil, pg.ErrInvalidCredentials
 	}
 
-	payload, _ := json.Marshal(params)
+	// switch statement for handling queryParam or bodyParam
+	var payload []byte
+	switch params.(type) {
+	case *CardToken:
+		ct := params.(*CardToken)
+
+		u := url.Values{}
+		u.Set(clientKey, opts.ClientId)
+		u.Set(cardCvv, ct.CardCvv)
+
+		// use tokenId instead if exists
+		if !reflect.ValueOf(ct.TokenID).IsZero() {
+			u.Set(tokenId, ct.TokenID)
+		} else {
+			u.Set(cardNumber, ct.CardNumber)
+			u.Set(cardExpMonth, ct.CardExpMonth)
+			u.Set(cardExpYear, ct.CardExpYear)
+		}
+
+		payload = []byte(u.Encode())
+	case *CardRegister:
+		cr := params.(*CardRegister)
+
+		u := url.Values{}
+		u.Set(clientKey, opts.ClientId)
+		u.Set(cardCvv, cr.CardCvv)
+		u.Set(cardNumber, cr.CardNumber)
+		u.Set(cardExpMonth, cr.CardExpMonth)
+		u.Set(cardExpYear, cr.CardExpYear)
+
+		payload = []byte(u.Encode())
+	default:
+		payload, _ = json.Marshal(params)
+	}
 
 	// create instance midtrans
 	m := &midtrans{
@@ -73,7 +113,7 @@ func setUriChargeAndCheckCredentials(opts *pg.Options) (string, bool) {
 		return "", false
 	}
 
-	return uri + chargeUri, true
+	return uri, true
 }
 
 // checkCredentials credentials validation environment

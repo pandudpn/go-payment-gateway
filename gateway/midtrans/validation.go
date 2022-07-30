@@ -3,8 +3,10 @@ package midtrans
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 
 	"github.com/pandudpn/go-payment-gateway"
+	"github.com/retgits/creditcard"
 )
 
 // validationParams required for any payment method
@@ -14,6 +16,10 @@ func validationParams(params interface{}) error {
 		return validationEWallet(params.(*EWallet))
 	case *BankTransferCreateParams:
 		return validationBankTransfer(params.(*BankTransferCreateParams))
+	case *CardToken:
+		return validationCardToken(params.(*CardToken))
+	case *CardRegister:
+		return validationCardRegister(params.(*CardRegister))
 	default:
 		return pg.ErrUnimplemented
 	}
@@ -101,4 +107,71 @@ func checkPaymentTypeBankTransfer(pt PaymentType) bool {
 	}
 
 	return false
+}
+
+// validationCardToken params required for create card token
+func validationCardToken(ct *CardToken) error {
+	var err = pg.ErrMissingParameter
+
+	// cvv not exists
+	if reflect.ValueOf(ct.CardCvv).IsZero() {
+		return fmt.Errorf("%s. CardCvv is required", err)
+	}
+
+	// skip any process if token_id is exists
+	if !reflect.ValueOf(ct.TokenID).IsZero() {
+		return nil
+	}
+
+	return validationCard(ct.CardNumber, ct.CardExpMonth, ct.CardExpYear, ct.CardCvv)
+}
+
+// validationCardRegister params required for register card token
+func validationCardRegister(cr *CardRegister) error {
+	var err = pg.ErrMissingParameter
+
+	// cvv not exists
+	if reflect.ValueOf(cr.CardCvv).IsZero() {
+		return fmt.Errorf("%s. CardCvv is required", err)
+	}
+
+	return validationCard(cr.CardNumber, cr.CardExpMonth, cr.CardExpYear, cr.CardCvv)
+}
+
+// validationCard params required for CreditCard
+func validationCard(cn, cem, cey, cvv string) error {
+	var err = pg.ErrMissingParameter
+	// card number not exists
+	if reflect.ValueOf(cn).IsZero() {
+		return fmt.Errorf("%s. CardNumber is required", err)
+	}
+
+	// expired month of card not exists
+	if reflect.ValueOf(cem).IsZero() {
+		return fmt.Errorf("%s. CardExpMonth is required", err)
+	}
+
+	// expired year of card not exists
+	if reflect.ValueOf(cey).IsZero() {
+		return fmt.Errorf("%s. CardExpYear is required", err)
+	}
+
+	// convert to number
+	expMonth, err := strconv.Atoi(cem)
+	if err != nil {
+		return fmt.Errorf("CardExpMonth must be number")
+	}
+
+	expYear, err := strconv.Atoi(cey)
+	if err != nil {
+		return fmt.Errorf("CardExpYear must be number")
+	}
+
+	c := creditcard.Card{CVV: cvv, Number: cn, ExpiryMonth: expMonth, ExpiryYear: expYear}
+
+	if len(c.Validate().Errors) > 0 {
+		return fmt.Errorf("%s", c.Validate().Errors[0])
+	}
+
+	return nil
 }

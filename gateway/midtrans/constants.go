@@ -34,6 +34,9 @@ const (
 	// PaymentTypePermata is payment type for Virtual Account with Bank Permata from Midtrans Core API
 	// permata from Midtrans only support transaction OpenAmount (need to fill the amount after input VA Number)
 	PaymentTypePermata PaymentType = "bank_transfer"
+
+	// PaymentTypeCard is payment type for Credit Card or Debit Card from Midtrans Core API
+	PaymentTypeCard PaymentType = "credit_card"
 )
 
 // convert to String value or type
@@ -44,15 +47,24 @@ func (pt PaymentType) String() string {
 type BankCode string
 
 const (
-	// BankTransferBCA code for Bank BCA
-	BankTransferBCA BankCode = "bca"
+	// BankBCA code for Bank BCA
+	BankBCA BankCode = "bca"
 
-	// BankTransferBRI code for Bank BRI
-	BankTransferBRI BankCode = "bri"
+	// BankBRI code for Bank BRI
+	BankBRI BankCode = "bri"
 
-	// BankTransferBNI code for Bank BNI
-	BankTransferBNI BankCode = "bni"
+	// BankBNI code for Bank BNI
+	BankBNI BankCode = "bni"
 
-	// BankTransferPermata code for Bank Permata
-	BankTransferPermata BankCode = "permata"
+	// BankPermata code for Bank Permata
+	BankPermata BankCode = "permata"
+
+	// BankMandiri code for Bank Mandiri
+	BankMandiri BankCode = "mandiri"
+
+	// BankMaybank code for Bank Maybank
+	BankMaybank BankCode = "maybank"
+
+	// BankCIMB code for Bank CIMB Niaga
+	BankCIMB BankCode = "cimb"
 )

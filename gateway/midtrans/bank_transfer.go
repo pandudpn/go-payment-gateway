@@ -42,6 +42,7 @@ func (m *midtrans) createBankTransferCharge(ctx context.Context) (*ChargeRespons
 	// set basic auth
 	header.Set("Authorization", utils.SetBasicAuthorization(m.opts.ServerKey, ""))
 
+	m.uri += chargeUri
 	err = m.opts.ApiCall.Call(ctx, http.MethodPost, m.uri, header, m.params, &chargeRes)
 	if err != nil {
 		return nil, err

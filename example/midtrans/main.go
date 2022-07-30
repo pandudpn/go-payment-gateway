@@ -62,7 +62,7 @@ func bankTransferCharge(opts *pg.Options) {
 			BillInfo2: id,
 		},
 		// BankTransfer: &midtrans.BankTransfer{
-		// 	Bank:     midtrans.BankTransferPermata,
+		// 	Bank:     midtrans.BankPermata,
 		// 	VANumber: "1234567890",
 		// },
 	}
@@ -86,6 +86,45 @@ func bankTransferCharge(opts *pg.Options) {
 	}
 }
 
+func createCardToken(cr *midtrans.CardResponse, opts *pg.Options) {
+	var ct = new(midtrans.CardToken)
+
+	if cr == nil {
+		ct.CardNumber = "5211111111111117"
+		ct.CardExpMonth = "12"
+		ct.CardExpYear = "2022"
+		ct.CardCvv = "123"
+	} else {
+		ct.CardCvv = "123"
+		ct.TokenID = cr.SavedTokenID
+	}
+
+	res, err := midtrans.CreateCardToken(ct, opts)
+	if err != nil {
+		log.Fatalln("failed to create card_token with error:", err)
+	}
+
+	log.Println("response card_token", *res)
+}
+
+func createRegisterCard(opts *pg.Options) *midtrans.CardResponse {
+	cr := &midtrans.CardRegister{
+		CardNumber:   "5211111111111117",
+		CardExpMonth: "12",
+		CardExpYear:  "2022",
+		CardCvv:      "123",
+	}
+
+	res, err := midtrans.CreateCardRegister(cr, opts)
+	if err != nil {
+		log.Fatalln("failed to create register_card with error:", err)
+		return nil
+	}
+
+	log.Println("response register_card", *res)
+	return res
+}
+
 func main() {
 	var err error
 
@@ -100,8 +139,14 @@ func main() {
 	}
 
 	// example e-wallet one_time_payment
-	ewalletCharge(opts)
+	// ewalletCharge(opts)
 
 	// example bank_transfer (virtual account)
-	bankTransferCharge(opts)
+	// bankTransferCharge(opts)
+
+	// register card token for credit_card or debit_card
+	cr := createRegisterCard(opts)
+
+	// create card token for credit_card or debit_card
+	createCardToken(cr, opts)
 }

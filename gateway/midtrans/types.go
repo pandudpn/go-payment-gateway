@@ -12,6 +12,30 @@ type TransactionDetail struct {
 	GrossAmount int64 `json:"gross_amount"`
 }
 
+// CustomerAddress address of customer detail
+type CustomerAddress struct {
+	// FirstName address of customer first name
+	FirstName string `json:"first_name,omitempty"`
+
+	// LastName address of customer last name
+	LastName string `json:"last_name,omitempty"`
+
+	// Phone customer phone number
+	Phone string `json:"phone,omitempty"`
+
+	// Address of customer
+	Address string `json:"address,omitempty"`
+
+	// City of customer
+	City string `json:"city,omitempty"`
+
+	// PostalCode zip code of customer address
+	PostalCode string `json:"postal_code,omitempty"`
+
+	// CountryCode code of country customer
+	CountryCode string `json:"country_code"`
+}
+
 // CustomerDetail details of customer
 type CustomerDetail struct {
 	// FirstName customer first name
@@ -27,10 +51,10 @@ type CustomerDetail struct {
 	Phone string `json:"phone,omitempty"`
 
 	// BillingAddress customer billing address
-	BillingAddress string `json:"billing_address,omitempty"`
+	BillingAddress *CustomerAddress `json:"billing_address,omitempty"`
 
 	// ShippingAddress customer shipping address
-	ShippingAddress string `json:"shipping_address"`
+	ShippingAddress *CustomerAddress `json:"shipping_address,omitempty"`
 }
 
 // ItemDetail details items purchased by Customer
@@ -270,6 +294,161 @@ type BankTransferCreateParams struct {
 	EChannel *EChannel `json:"echannel,omitempty"`
 }
 
+// CardToken create a tokenization for credit_card or debit_card
+type CardToken struct {
+	// TokenID The token ID of credit card saved previously
+	TokenID string `json:"token_id,omitempty"`
+
+	// CardNumber which will be converted into a secured token
+	// this field is required
+	//
+	// Default: ""
+	CardNumber string `json:"card_number,omitempty"`
+
+	// CardExpMonth expired month of card
+	// this field is required
+	//
+	// Default: ""
+	CardExpMonth string `json:"card_exp_month,omitempty"`
+
+	// CardExpYear expired year of card
+	// this field is required
+	//
+	// Default: ""
+	CardExpYear string `json:"card_exp_year,omitempty"`
+
+	// CardCvv three digit unique written on the back card
+	// this field is required
+	//
+	// Default: ""
+	CardCvv string `json:"card_cvv"`
+}
+
+// CardRegister create a tokenization for credit_card or debit_card
+// and will save the token for future transactions
+// **notes : no need more input card_number, card_exp_month, or card_exp_year
+//			 after Register the Card
+type CardRegister struct {
+	// CardNumber which will be converted into a secured token
+	// this field is required
+	//
+	// Default: ""
+	CardNumber string `json:"card_number,omitempty"`
+
+	// CardExpMonth expired month of card
+	// this field is required
+	//
+	// Default: ""
+	CardExpMonth string `json:"card_exp_month,omitempty"`
+
+	// CardExpYear expired year of card
+	// this field is required
+	//
+	// Default: ""
+	CardExpYear string `json:"card_exp_year,omitempty"`
+
+	// CardCvv three digit unique written on the back card
+	// this field is required
+	//
+	// Default: ""
+	CardCvv string `json:"card_cvv"`
+}
+
+// CreditCard the details of payment used for the transaction
+type CreditCard struct {
+	// TokenID represents customer credit card information
+	//
+	// Default: ""
+	TokenID string `json:"token_id"`
+
+	// Bank Name of the acquiring bank
+	//
+	// Default: ""
+	Bank BankCode `json:"bank,omitempty"`
+
+	// InstallmentTerm tenure in terms of months
+	//
+	// Default: 0
+	InstallmentTerm int `json:"installment_term,omitempty"`
+
+	// Bins List of credit card's BIN (Bank Identification Number)
+	// that is allowed for transaction
+	//
+	// Default: null
+	Bins []string `json:"bins,omitempty"`
+
+	// Type Used as preAuthorization feature
+	// valid value
+	// - authorize
+	//
+	// Default: ""
+	Type string `json:"type,omitempty"`
+
+	// Authentication Flag to enable the 3D secure authentication
+	//
+	// Default: false
+	Authentication bool `json:"authentication,omitempty"`
+
+	// SaveTokenID Used on 'One Click' or 'Two Clicks' feature
+	// Enabling it will return a saved_token_id
+	// that can be used for the next transaction
+	//
+	// Default: false
+	SaveTokenID bool `json:"save_token_id,omitempty"`
+}
+
+// CardPayment params charge transaction using credit_card or debit_card
+type CardPayment struct {
+	// PaymentType set Bank Transfer payment method
+	//
+	// Default: PaymentTypeCard
+	PaymentType PaymentType `json:"payment_type"`
+
+	// TransactionDetails the details of the specific transactions
+	//
+	// Default: null
+	TransactionDetails *TransactionDetail `json:"transaction_details"`
+
+	// ItemDetails details of items purchased by customer
+	//
+	// Default: null
+	ItemDetails []*ItemDetail `json:"item_details"`
+
+	// CustomerDetails detail of customer
+	//
+	// Default: null
+	CustomerDetails *CustomerDetail `json:"customer_details,omitempty"`
+
+	// CreditCard the details of payment used for the transaction
+	//
+	// Default: null
+	CreditCard *CreditCard `json:"credit_card"`
+}
+
+// CardResponse after create or register CreditCard
+type CardResponse struct {
+	// StatusCode status code of transaction result
+	StatusCode string `json:"status_code"`
+
+	// StatusMessage description of transaction result
+	StatusMessage string `json:"status_message"`
+
+	// TokenID token transaction for payment CardToken
+	TokenID string `json:"token_id"`
+
+	// SavedTokenID A flag to indicate whether the token_id is saved for future transactions
+	SavedTokenID string `json:"saved_token_id"`
+
+	// TransactionID transaction id given by Midtrans
+	TransactionID string `json:"transaction_id"`
+
+	// MaskedCard first 6-digit and last 4-digit of customer's payment card number
+	MaskedCard string `json:"masked_card"`
+
+	// Hash algorithm for hashing CardToken
+	Hash string `json:"hash"`
+}
+
 // ChargeResponse charge response and notifications
 type ChargeResponse struct {
 	// ID of request
@@ -334,4 +513,22 @@ type ChargeResponse struct {
 
 	// VANumbers list va_number for payment Bank BCA, BRI, or BNI
 	VANumbers []*BankTransfer `json:"va_numbers"`
+
+	// SavedTokenID A flag to indicate whether the token_id is saved for future transactions
+	SavedTokenID string `json:"saved_token_id"`
+
+	// RedirectURL The URL to redirect the user to 3D Secure authentication page
+	RedirectURL string `json:"redirect_url"`
+
+	// Bank code
+	Bank BankCode `json:"bank"`
+
+	// MaskedCard first 6-digit and last 4-digit of customer's payment card number
+	MaskedCard string `json:"masked_card"`
+
+	// CardType type of card used
+	// possible values:
+	// - credit
+	// - debit
+	CardType string `json:"card_type"`
 }

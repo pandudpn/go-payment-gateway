@@ -119,7 +119,7 @@ func getMockParamsBankTransfer() *midtrans.BankTransferCreateParams {
 			},
 		},
 		BankTransfer: &midtrans.BankTransfer{
-			Bank:     midtrans.BankTransferBCA,
+			Bank:     midtrans.BankBCA,
 			VANumber: "2122274139",
 		},
 	}
@@ -144,7 +144,7 @@ func getMockChargeResponseBankTransfer() *midtrans.ChargeResponse {
 		TransactionTime:   "2022-07-30 10:00:00",
 		VANumbers: []*midtrans.BankTransfer{
 			{
-				Bank:     midtrans.BankTransferBCA,
+				Bank:     midtrans.BankBCA,
 				VANumber: "268192122274139",
 			},
 		},
