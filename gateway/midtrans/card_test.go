@@ -395,6 +395,33 @@ func TestCreateCardChargeWithContext_Success(t *testing.T) {
 	assert.Equal(t, &expectedResult, result)
 }
 
+func TestCreateCardCharge_ErrorRequest(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockUrl := getMockUrlSandBox()
+	mockParams := getMockParamsCardChargeBytes()
+	expectedResult := midtrans.ChargeResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mockUrl, mock.Anything, mockParams, &expectedResult).Return(errors.New("error request"))
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	cp := getMockParamsCardCharge()
+	result, err := midtrans.CreateCardCharge(cp, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
 func TestCreateCardCharge_ErrorValidationTransactionDetailsIsNil(t *testing.T) {
 	// mock options
 	mockOptions := getMockOptionsSandBox()
@@ -460,6 +487,21 @@ func TestCreateCardCharge_ErrorValidationParamsTokenIdIsNil(t *testing.T) {
 	cp := getMockParamsCardCharge()
 	cp.CreditCard.TokenID = ""
 	result, err := midtrans.CreateCardCharge(cp, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestCreateCardChargeWithContext_ErrorValidationParamsTokenIdIsNil(t *testing.T) {
+	ctx := context.Background()
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	cp := getMockParamsCardCharge()
+	cp.CreditCard.TokenID = ""
+	result, err := midtrans.CreateCardChargeWithContext(ctx, cp, opts)
 
 	assert.NotNil(t, err, "error should not to be nil")
 	assert.Nil(t, result, "result should be nil")

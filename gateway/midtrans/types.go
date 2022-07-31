@@ -294,6 +294,68 @@ type BankTransferCreateParams struct {
 	EChannel *EChannel `json:"echannel,omitempty"`
 }
 
+// GopayPartner gopay linking specific parameters
+type GopayPartner struct {
+	// PhoneNumber linked to the customer's account
+	//
+	// Default: ""
+	PhoneNumber string `json:"phone_number"`
+
+	// CountryCode associated with the phone number
+	//
+	// Default: ""
+	CountryCode string `json:"country_code"`
+
+	// RedirectURL where user is redrected to after finishing
+	// the confirmation on Gojek app
+	//
+	// Default: ""
+	RedirectURL string `json:"redirect_url"`
+}
+
+// LinkAccountPay is triggered to link the customer's account
+// to be used for payments using specific payment channel
+type LinkAccountPay struct {
+	// PaymentType Channel where the account is register to
+	//
+	// Default: PaymentTypeGopay
+	PaymentType PaymentType `json:"payment_type"`
+
+	// GopayPartner GoPay linking params
+	//
+	// Default: null
+	GopayPartner *GopayPartner `json:"gopay_partner"`
+}
+
+// LinkAccountPayResponse response from creating Pay Account
+type LinkAccountPayResponse struct {
+	// StatusCode of the API Result
+	StatusCode string `json:"status_code"`
+
+	// PaymentType channel associated with the account
+	PaymentType PaymentType `json:"payment_type"`
+
+	// AccountID customer account id to be used for payment
+	AccountID string `json:"account_id"`
+
+	// AccountStatus status of the account
+	// possible values are:
+	// - PENDING
+	// - EXPIRED
+	// - ENABLED
+	// - DISABLED
+	AccountStatus string `json:"account_status"`
+
+	// ChannelResponseCode response code from payment channel provider
+	ChannelResponseCode string `json:"channel_response_code"`
+
+	// ChannelResponseMessage response message from payment channel provider
+	ChannelResponseMessage string `json:"channel_response_message"`
+
+	// Actions to be performed
+	Actions []*Action `json:"actions"`
+}
+
 // CardToken create a tokenization for credit_card or debit_card
 type CardToken struct {
 	// TokenID The token ID of credit card saved previously

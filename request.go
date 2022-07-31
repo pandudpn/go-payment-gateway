@@ -104,11 +104,7 @@ func (a *ApiRequest) DoRequest(req *http.Request, result interface{}) error {
 	a.Logging.Printf("Request completed in %.4fs\n", time.Since(start).Seconds())
 
 	// read body response
-	resBody, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		a.Logging.Errorf("Cannot read response body: %s", err)
-		return err
-	}
+	resBody, _ := ioutil.ReadAll(res.Body)
 
 	// log response
 	a.Logging.Println("================================= RESPONSE =================================")

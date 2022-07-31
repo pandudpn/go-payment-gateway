@@ -42,6 +42,14 @@ func getMockUrlRegisterCardProduction() string {
 	return "https://api.midtrans.com/v2/card/register"
 }
 
+func getMockUrlCreatePayAccountSandBox() string {
+	return "https://api.sandbox.midtrans.com/v2/pay/account"
+}
+
+func getMockUrlCreatePayAccountProduction() string {
+	return "https://api.midtrans.com/v2/pay/account"
+}
+
 func getMockOptionsSandBox() *pg.Options {
 	return &pg.Options{
 		Environment: pg.SandBox,
@@ -96,6 +104,39 @@ func getMockParamsEWalletBytes() []byte {
 	b, _ := json.Marshal(getMockParamsEWallet())
 
 	return b
+}
+
+func getMockParamsLinkAccountPay() *midtrans.LinkAccountPay {
+	return &midtrans.LinkAccountPay{
+		PaymentType: midtrans.PaymentTypeGopay,
+		GopayPartner: &midtrans.GopayPartner{
+			PhoneNumber: "81212345678",
+			CountryCode: "62",
+			RedirectURL: "https://www.your-app.com",
+		},
+	}
+}
+
+func getMockParamsLinkAccountPayBytes() []byte {
+	b, _ := json.Marshal(getMockParamsLinkAccountPay())
+
+	return b
+}
+
+func getMockLinkAccountPayResponse() *midtrans.LinkAccountPayResponse {
+	return &midtrans.LinkAccountPayResponse{
+		PaymentType: midtrans.PaymentTypeGopay,
+		StatusCode:  "201",
+		AccountID:   "account-id-testing",
+		Actions: []*midtrans.Action{
+			{
+				Name:   "activation-deeplink",
+				Method: "GET",
+				URL:    "https://api.sandbox.midtrans.com/v2/pay/account/gpar_account-id-testing/link",
+			},
+		},
+		AccountStatus: "PENDING",
+	}
 }
 
 func getMockChargeResponseEWallet() *midtrans.ChargeResponse {

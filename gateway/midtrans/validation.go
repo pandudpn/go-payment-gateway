@@ -22,6 +22,8 @@ func validationParams(params interface{}) error {
 		return validationCardRegister(params.(*CardRegister))
 	case *CardPayment:
 		return validationCardPayment(params.(*CardPayment))
+	case *LinkAccountPay:
+		return validationLinkAccountPay(params.(*LinkAccountPay))
 	default:
 		return pg.ErrUnimplemented
 	}
@@ -213,4 +215,32 @@ func validationCardPayment(cp *CardPayment) error {
 // checkPaymentTypeCard eligible for payment type CreditCard
 func checkPaymentTypeCard(pt PaymentType) bool {
 	return pt == PaymentTypeCard
+}
+
+// validationLinkAccountPay params required for create pay account
+func validationLinkAccountPay(lap *LinkAccountPay) error {
+	var err = pg.ErrInvalidParameter
+
+	// make default when paymentType from params is not exists
+	if reflect.ValueOf(lap.PaymentType).IsZero() {
+		lap.PaymentType = PaymentTypeGopay
+	}
+
+	// make sure only gopay or shopeepay payment type
+	if !checkPaymentTypeLinkAccountPay(lap.PaymentType) {
+		return fmt.Errorf("invalid payment_type. possible value only 'PaymentTypeGopay'")
+	}
+
+	// if params gopay partner is not exists
+	// return an error
+	if lap.GopayPartner == nil || reflect.ValueOf(lap.GopayPartner.PhoneNumber).IsZero() {
+		return fmt.Errorf("%s. one or more parameters in midtrans.LinkAccountPay.GopayPartner is missing", err)
+	}
+
+	return nil
+}
+
+// checkPaymentTypeLinkAccountPay eligible for payment type PayAccount
+func checkPaymentTypeLinkAccountPay(pt PaymentType) bool {
+	return pt == PaymentTypeGopay
 }

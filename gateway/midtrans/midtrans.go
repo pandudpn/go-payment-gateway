@@ -24,6 +24,9 @@ const (
 
 	// uri for register CardToken
 	createRegisterCardUri = "/v2/card/register"
+
+	// uri for createPayAccount
+	createPayAccountUri = "/v2/pay/account"
 )
 
 type midtrans struct {
