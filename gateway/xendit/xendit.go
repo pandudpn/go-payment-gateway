@@ -37,7 +37,7 @@ func createChargeXendit(params interface{}, opts *pg.Options) (*xendit, error) {
 	}
 
 	// validation parameters
-	err := validationParams(params)
+	err := ValidationParams(params)
 	if err != nil {
 		return nil, err
 	}

@@ -47,7 +47,7 @@ func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, erro
 	}
 
 	// validation parameters
-	err := validationParams(params)
+	err := ValidationParams(params)
 	if err != nil {
 		return nil, err
 	}

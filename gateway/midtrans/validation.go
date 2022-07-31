@@ -9,8 +9,8 @@ import (
 	"github.com/retgits/creditcard"
 )
 
-// validationParams required for any payment method
-func validationParams(params interface{}) error {
+// ValidationParams required for any payment method
+func ValidationParams(params interface{}) error {
 	switch params.(type) {
 	case *EWallet:
 		return validationEWallet(params.(*EWallet))
