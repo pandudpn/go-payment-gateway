@@ -52,7 +52,7 @@ func (m *midtrans) createLinkPayAccount(ctx context.Context) (*LinkAccountPayRes
 	return &res, nil
 }
 
-// GetLinkPayAccountStatus is to link the customer's account for payments
+// GetLinkPayAccountStatus get status pay account
 func GetLinkPayAccountStatus(accountId string, opts *pg.Options) (*LinkAccountPayResponse, error) {
 	m, err := createChargeMidtrans(accountId, opts)
 	if err != nil {
@@ -65,7 +65,7 @@ func GetLinkPayAccountStatus(accountId string, opts *pg.Options) (*LinkAccountPa
 	return m.getLinkPayAccountStatus(ctx)
 }
 
-// GetLinkPayAccountStatusWithContext is to link the customer's account for payments
+// GetLinkPayAccountStatusWithContext get status pay account with context
 func GetLinkPayAccountStatusWithContext(ctx context.Context, accountId string, opts *pg.Options) (*LinkAccountPayResponse, error) {
 	m, err := createChargeMidtrans(accountId, opts)
 	if err != nil {
@@ -87,6 +87,48 @@ func (m *midtrans) getLinkPayAccountStatus(ctx context.Context) (*LinkAccountPay
 
 	m.uri += fmt.Sprintf("%s/%s", createPayAccountUri, string(m.params))
 	err = m.opts.ApiCall.Call(ctx, http.MethodGet, m.uri, header, nil, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+// UnbindLinkPayAccount unbind account
+func UnbindLinkPayAccount(accountId string, opts *pg.Options) (*LinkAccountPayResponse, error) {
+	m, err := createChargeMidtrans(accountId, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(10)*time.Second)
+	defer cancel()
+
+	return m.unbindLinkPayAccount(ctx)
+}
+
+// UnbindLinkPayAccountWithContext unbind account with context
+func UnbindLinkPayAccountWithContext(ctx context.Context, accountId string, opts *pg.Options) (*LinkAccountPayResponse, error) {
+	m, err := createChargeMidtrans(accountId, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return m.unbindLinkPayAccount(ctx)
+}
+
+func (m *midtrans) unbindLinkPayAccount(ctx context.Context) (*LinkAccountPayResponse, error) {
+	var (
+		res    LinkAccountPayResponse
+		err    error
+		header = make(http.Header)
+	)
+
+	// set authorization basic header
+	header.Set("Authorization", utils.SetBasicAuthorization(m.opts.ServerKey, ""))
+
+	m.uri += fmt.Sprintf("%s/%s/unbind", createPayAccountUri, string(m.params))
+	err = m.opts.ApiCall.Call(ctx, http.MethodPost, m.uri, header, nil, &res)
 	if err != nil {
 		return nil, err
 	}

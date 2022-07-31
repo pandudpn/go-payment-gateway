@@ -305,3 +305,142 @@ func TestGetLinkPayAccountStatusWithContext_ErrorCredentials(t *testing.T) {
 	assert.NotNil(t, err, "error should not to be nil")
 	assert.Nil(t, result, "result should be nil")
 }
+
+func TestUnbindLinkPayAccount_SuccessSandBox(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId + "/unbind"
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mockUrl, mockHeader, nil, &expectedResult).Return(nil)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.UnbindLinkPayAccount(mockAccountId, opts)
+
+	assert.Nil(t, err, "error should be nil")
+	assert.Equal(t, &expectedResult, result)
+}
+
+func TestUnbindLinkPayAccountWithContext_SuccessSandBox(t *testing.T) {
+	ctx := context.Background()
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId + "/unbind"
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mockUrl, mockHeader, nil, &expectedResult).Return(nil)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.UnbindLinkPayAccountWithContext(ctx, mockAccountId, opts)
+
+	assert.Nil(t, err, "error should be nil")
+	assert.Equal(t, &expectedResult, result)
+}
+
+func TestUnbindLinkPayAccount_ErrorRequest(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId + "/unbind"
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mockUrl, mockHeader, nil, &expectedResult).Return(errors.New("error request"))
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.UnbindLinkPayAccount(mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestUnbindLinkPayAccountWithContext_ErrorRequest(t *testing.T) {
+	ctx := context.Background()
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId + "/unbind"
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mockUrl, mockHeader, nil, &expectedResult).Return(errors.New("error request"))
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.UnbindLinkPayAccountWithContext(ctx, mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestUnbindLinkPayAccount_ErrorCredentials(t *testing.T) {
+	// mock options
+	mockAccountId := getMockAccountId()
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ServerKey = clientId
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.UnbindLinkPayAccount(mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestUnbindLinkPayAccountWithContext_ErrorCredentials(t *testing.T) {
+	ctx := context.Background()
+	// mock options
+	mockAccountId := getMockAccountId()
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ServerKey = clientId
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.UnbindLinkPayAccountWithContext(ctx, mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
