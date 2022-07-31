@@ -47,9 +47,11 @@ func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, erro
 	}
 
 	// validation parameters
-	err := ValidationParams(params)
-	if err != nil {
-		return nil, err
+	if reflect.ValueOf(params).Kind() == reflect.Ptr || reflect.ValueOf(params).Kind() == reflect.Struct {
+		err := ValidationParams(params)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// create uri and check credentials
@@ -89,6 +91,8 @@ func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, erro
 		u.Set(cardExpYear, cr.CardExpYear)
 
 		payload = []byte(u.Encode())
+	case string:
+		payload = []byte(params.(string))
 	default:
 		payload, _ = json.Marshal(params)
 	}

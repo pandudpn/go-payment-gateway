@@ -380,6 +380,9 @@ type LinkAccountPayResponse struct {
 	Metadata struct {
 		// PaymentOptions data from the specific provider payment
 		PaymentOptions []*PaymentOption `json:"payment_options"`
+
+		// ReferenceID identifier for specific request
+		ReferenceID string `json:"reference_id"`
 	} `json:"metadata"`
 }
 

@@ -166,3 +166,142 @@ func TestCreateLinkPayAccount_ErrorValidationParamsGopayPartnerIsNil(t *testing.
 	assert.NotNil(t, err, "error should not to be nil")
 	assert.Nil(t, result, "result should be nil")
 }
+
+func TestGetLinkPayAccountStatus_SuccessSandBox(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodGet, mockUrl, mockHeader, nil, &expectedResult).Return(nil)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.GetLinkPayAccountStatus(mockAccountId, opts)
+
+	assert.Nil(t, err, "error should be nil")
+	assert.Equal(t, &expectedResult, result)
+}
+
+func TestGetLinkPayAccountStatusWithContext_SuccessSandBox(t *testing.T) {
+	ctx := context.Background()
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodGet, mockUrl, mockHeader, nil, &expectedResult).Return(nil)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.GetLinkPayAccountStatusWithContext(ctx, mockAccountId, opts)
+
+	assert.Nil(t, err, "error should be nil")
+	assert.Equal(t, &expectedResult, result)
+}
+
+func TestGetLinkPayAccountStatus_ErrorRequest(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodGet, mockUrl, mockHeader, nil, &expectedResult).Return(errors.New("error request"))
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.GetLinkPayAccountStatus(mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestGetLinkPayAccountStatusWithContext_ErrorRequest(t *testing.T) {
+	ctx := context.Background()
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	mockAccountId := getMockAccountId()
+	mockUrl := getMockUrlCreatePayAccountSandBox() + "/" + mockAccountId
+	mockHeader := getMockHeaderSandBox()
+	expectedResult := midtrans.LinkAccountPayResponse{}
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodGet, mockUrl, mockHeader, nil, &expectedResult).Return(errors.New("error request"))
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.GetLinkPayAccountStatusWithContext(ctx, mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestGetLinkPayAccountStatus_ErrorCredentials(t *testing.T) {
+	// mock options
+	mockAccountId := getMockAccountId()
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ServerKey = clientId
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.GetLinkPayAccountStatus(mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}
+
+func TestGetLinkPayAccountStatusWithContext_ErrorCredentials(t *testing.T) {
+	ctx := context.Background()
+	// mock options
+	mockAccountId := getMockAccountId()
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ServerKey = clientId
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := midtrans.GetLinkPayAccountStatusWithContext(ctx, mockAccountId, opts)
+
+	assert.NotNil(t, err, "error should not to be nil")
+	assert.Nil(t, result, "result should be nil")
+}

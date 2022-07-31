@@ -305,3 +305,7 @@ func getMockParamsCardChargeBytes() []byte {
 	b, _ := json.Marshal(getMockParamsCardCharge())
 	return b
 }
+
+func getMockAccountId() string {
+	return "1ea74cfd-56a0-4e2a-adc4-956e10a04279"
+}
