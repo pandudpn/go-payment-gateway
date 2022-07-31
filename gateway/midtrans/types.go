@@ -313,6 +313,27 @@ type GopayPartner struct {
 	RedirectURL string `json:"redirect_url"`
 }
 
+// PaymentOption additional data from the specific payment provider
+type PaymentOption struct {
+	// Name payment option
+	Name string `json:"name"`
+
+	// Active status of payment options
+	Active bool `json:"active"`
+
+	// Token that need to be use on ChargeEWallet as PaymentOptionToken
+	Token string `json:"token"`
+
+	// Balance linked account balance for each payment option
+	Balance struct {
+		// Value balance
+		Value string `json:"value"`
+
+		// Currency balance
+		Currency string `json:"currency"`
+	} `json:"balance"`
+}
+
 // LinkAccountPay is triggered to link the customer's account
 // to be used for payments using specific payment channel
 type LinkAccountPay struct {
@@ -354,6 +375,12 @@ type LinkAccountPayResponse struct {
 
 	// Actions to be performed
 	Actions []*Action `json:"actions"`
+
+	// Metadata additional data
+	Metadata struct {
+		// PaymentOptions data from the specific provider payment
+		PaymentOptions []*PaymentOption `json:"payment_options"`
+	} `json:"metadata"`
 }
 
 // CardToken create a tokenization for credit_card or debit_card
