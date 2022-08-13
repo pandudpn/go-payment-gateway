@@ -40,7 +40,7 @@ We're supporting the payments:
 
 | Payment Channels                                  | Midtrans (Core API) | Xendit (Core API)  | OY! Indonesia (Core API) |
 |---------------------------------------------------|:-------------------:|:------------------:|:------------------------:|
-| Credit or Debit Card                              | :white_check_card:  |    :hourglass:     |           :x:            |
+| Credit or Debit Card                              | :white_check_mark:  |    :hourglass:     |           :x:            |
 
 ### Virtual Account or Bank Transfer:
 
