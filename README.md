@@ -28,16 +28,18 @@ We're supporting the payments:
 
 ### E-Wallets:
 
-| Payment Channels                                  | Midtrans (Core API) | Xendit (Core API)  | OY! Indonesia (Core API) |
-|---------------------------------------------------|:-------------------:|:------------------:|:------------------------:|
-| Gopay (non-tokenization)                          | :white_check_mark:  |        :x:         |           :x:            |
-| Gopay (tokenization)                              | :white_check_mark:  |        :x:         |           :x:            |
-| OVO (non-tokenization)                            |         :x:         | :white_check_mark: |       :hourglass:        |
-| OVO (tokenization)                                |         :x:         | :white_check_mark: |           :x:            |
-| ShopeePay (non-tokenization)                      | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
-| ShopeePay (tokenization)                          |         :x:         | :white_check_mark: |           :x:            |
-| DANA (non-tokenization)                           |         :x:         | :white_check_mark: |       :hourglass:        |
-| LinkAja (non-tokenization)                        |         :x:         | :white_check_mark: |       :hourglass:        |
+| Payment Channels                              | Midtrans (Core API) | Xendit (Core API)  | OY! Indonesia (Core API) |
+|-----------------------------------------------|:-------------------:|:------------------:|:------------------------:|
+| Gopay (non-tokenization)                      | :white_check_mark:  |        :x:         |           :x:            |
+| Gopay (tokenization)                          | :white_check_mark:  |        :x:         |           :x:            |
+| OVO (non-tokenization)                        |         :x:         | :white_check_mark: |       :hourglass:        |
+| OVO (tokenization)                            |         :x:         | :white_check_mark: |           :x:            |
+| ShopeePay (non-tokenization)                  | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
+| ShopeePay (tokenization)                      |         :x:         | :white_check_mark: |           :x:            |
+| DANA (non-tokenization)                       |         :x:         | :white_check_mark: |       :hourglass:        |
+| DANA (tokenization)                           |         :x:         |        :x:         |           :x:            |
+| LinkAja (non-tokenization)                    |         :x:         | :white_check_mark: |       :hourglass:        |
+| LinkAja (tokenization)                        |         :x:         |        :x:         |           :x:            |
 
 ### Credit Card:
 
