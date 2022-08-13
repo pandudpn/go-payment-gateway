@@ -14,6 +14,9 @@ SDK GO for Payment Gateway in Indonesia. Currently only supports [Midtrans Core 
 <summary><b>View table of contents</b></summary>
 
 - [Payment Channels Supported](#payment-channels-supported)
+  - [E-Wallet](#e-wallets)
+  - [Credit Card](#credit-card)
+  - [Virtual Account](#virtual-account-or-bank-transfer)
 
 </details>
 
@@ -47,27 +50,26 @@ We're supporting the payments:
 | Payment Channels                                  | Midtrans (Core API) | Xendit (Core API)  | OY! Indonesia (Core API) |
 |---------------------------------------------------|:-------------------:|:------------------:|:------------------------:|
 | BCA Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| BNI Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| BRI Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| Mandiri Virtual Account (Open Amount)             | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| Permata Virtual Account (Open Amount)             | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| BJB Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
-| BSI Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
-| CIMB Virtual Account (Open Amount)                |         :x:         |    :hourglass:     |       :hourglass:        |
-| DBS Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
-| Sahabat Sampoerna Virtual Account (Open Amount)   |         :x:         |    :hourglass:     |           :x:            |
-| BTPN Virtual Account (Open Amount)                |         :x:         |        :x:         |       :hourglass:        |
 | BCA Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |       :hourglass:        |
+| BNI Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
 | BNI Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |       :hourglass:        |
+| BRI Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
 | BRI Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |       :hourglass:        |
+| Mandiri Virtual Account (Open Amount)             | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
 | Mandiri Virtual Account (Closed Amount)           |         :x:         |    :hourglass:     |       :hourglass:        |
+| Permata Virtual Account (Open Amount)             | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
 | Permata Virtual Account (Closed Amount)           |         :x:         |    :hourglass:     |       :hourglass:        |
+| BJB Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
 | BJB Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |           :x:            |
+| BSI Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
 | BSI Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |           :x:            |
+| CIMB Virtual Account (Open Amount)                |         :x:         |    :hourglass:     |       :hourglass:        |
 | CIMB Virtual Account (Closed Amount)              |         :x:         |    :hourglass:     |       :hourglass:        |
+| DBS Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
 | DBS Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |           :x:            |
+| Sahabat Sampoerna Virtual Account (Open Amount)   |         :x:         |    :hourglass:     |           :x:            |
 | Sahabat Sampoerna Virtual Account (Closed Amount) |         :x:         |    :hourglass:     |           :x:            |
-| BTPN Virtual Account (Closed Amount)              |         :x:         |        :x:         |       :hourglass:        |
+| BTPN Virtual Account (Open Amount)                |         :x:         |        :x:         |       :hourglass:        |
 | BTPN Virtual Account (Closed Amount)              |         :x:         |        :x:         |       :hourglass:        |
 
 ## License
