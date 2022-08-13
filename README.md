@@ -17,6 +17,8 @@ SDK GO for Payment Gateway in Indonesia. Currently only supports [Midtrans Core 
   - [E-Wallet](#e-wallets)
   - [Credit Card](#credit-card)
   - [Virtual Account](#virtual-account-or-bank-transfer)
+  - [Retail Outlets](#retail-outlets)
+  - [Paylater](#cardless-credit-or-paylater)
 
 </details>
 
@@ -73,6 +75,33 @@ We're supporting the payments:
 | Sahabat Sampoerna Virtual Account (Closed Amount) |         :x:         |    :hourglass:     |           :x:            |
 | BTPN Virtual Account (Open Amount)                |         :x:         |        :x:         |       :hourglass:        |
 | BTPN Virtual Account (Closed Amount)              |         :x:         |        :x:         |       :hourglass:        |
+
+### Retail Outlets
+
+<details>
+
+  <summary>Notes</summary>
+
+> Payment channel Alfamart, customer can complete their payment at various stores under ***Alfa Group***.
+> 
+> The supported stores are: **Alfamart**, **Alfamidi** and **DAN+DAN**
+
+</details>
+
+| Payment Channels | Midtrans (Core API) | Xendit (Core API) | OY! Indonesia (Core API) |
+|------------------|:-------------------:|:-----------------:|:------------------------:|
+| Alfamart         |     :hourglass:     |    :hourglass:    |           :x:            |
+| Indomaret        |     :hourglass:     |    :hourglass:    |           :x:            |
+
+### Cardless Credit or Paylater
+
+| Payment Channels | Midtrans (Core API) | Xendit (Core API) | OY! Indonesia (Core API) |
+|------------------|:-------------------:|:-----------------:|:------------------------:|
+| Akulaku          |     :hourglass:     |    :hourglass:    |           :x:            |
+| Kredivo          |     :hourglass:     |    :hourglass:    |           :x:            |
+| UangMe           |         :x:         |    :hourglass:    |           :x:            |
+| IndoDana         |         :x:         |    :hourglass:    |           :x:            |
+| Atome            |         :x:         |    :hourglass:    |           :x:            |
 
 ## License
 
