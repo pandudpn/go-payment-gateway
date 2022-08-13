@@ -23,12 +23,9 @@ SDK GO for Payment Gateway in Indonesia. Currently only supports [Midtrans Core 
 
 We're supporting the payments:
 
-- Bank Transfer via Virtual Account (BCA, BNI, BRI, Mandiri, Permata, and other's Bank) with closed or open amount.
-- EWallet (GOPAY, OVO, DANA, LinkAja, ShopeePay) with OneTime Payment or Linked Account.
-- Credit or Debit Card with/without installment.
-- Recurring payment with Credit Card, GOPAY.
-- Retail Outlet (Alfamart, Indomaret, Alfamidi, and other's RO).
-- Cardless Credit (Kredivo, Akulaku, Indodana, and other's credit).
+| Payment Channels | Midtrans (Core API)  | Xendit (Core API) | OY! Indonesia (Core API) |
+|------------------|:--------------------:|:-----------------:|:------------------------:| 
+| Gopay            | :white_check_mark:   |       :x:         |          :x:             | 
 
 ## License
 
