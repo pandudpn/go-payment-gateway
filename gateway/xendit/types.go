@@ -451,7 +451,7 @@ type UpdateVirtualAccountParam struct {
 	// ID of the virtual account created before
 	//
 	// Default: ""
-	ID string `json:"id"`
+	ID string `json:"-"`
 
 	// ExternalID an ID of your choice which you provide
 	//
