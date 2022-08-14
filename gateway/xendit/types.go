@@ -270,3 +270,234 @@ type ChargeResponse struct {
 	// define the json properties and values based on your information
 	Metadata map[string]interface{} `json:"metadata"`
 }
+
+// VirtualAccount response for created payment channel Virtual Account
+type VirtualAccount struct {
+	// ID unique ID from Xendit for the virtual account
+	// use this ID for support escalation and reconciliation
+	ID string `json:"id"`
+
+	// ExternalID an ID of your choice which you provide
+	ExternalID string `json:"external_id"`
+
+	// OwnerID your xendit BusinessID
+	OwnerID string `json:"owner_id"`
+
+	// BankCode bank code for the relevant bank
+	BankCode BankCode `json:"bank_code"`
+
+	// MerchantCode prefix for the Virtual Account
+	// this is xendit merchant code for aggregator
+	MerchantCode string `json:"merchant_code"`
+
+	// AccountNumber complete virtual account number
+	AccountNumber string `json:"account_number"`
+
+	// Name of virtual account
+	Name string `json:"name"`
+
+	// Currency in which the virtual account operates
+	// all bank have IDR currency expect DBS has USD currency
+	Currency Currency `json:"currency"`
+
+	// IsSingleUse there are 2 types of va
+	// - true: va will be inactive automatically when payment is success
+	// - false: remain active when payment is success and can continue to
+	//         receive payment using the same VA
+	IsSingleUse bool `json:"is_single_use"`
+
+	// IsClosed there are 2 types of va
+	// - true: means your customer can only pay amount specified by you.
+	//        payment will reject if attempted payment amount deviates from the amount you specified
+	// - false: means your customer can pay any amount to the Virtual Account
+	IsClosed bool `json:"is_closed"`
+
+	// ExpectedAmount required amount to be paid by your customer for Closed VA (is_closed: true)
+	ExpectedAmount float64 `json:"expected_amount"`
+
+	// SuggestedAmount for the VA. only supported for Mandiri and BRI VA
+	SuggestedAmount float64 `json:"suggested_amount"`
+
+	// ExpirationDate timestamp of VA expiration time
+	// Timezone UTC+0
+	ExpirationDate time.Time `json:"expiration_date"`
+
+	// Description of the VA that will be displayed in payment interface
+	Description string `json:"description"`
+
+	// Status of VA
+	Status StatusVA `json:"status"`
+}
+
+// VirtualAccountPayment params body from xendit to our callback
+// it will use when Customer already successful payment their VA
+type VirtualAccountPayment struct {
+	// ID unique ID from Xendit for the virtual account
+	// use this ID for support escalation and reconciliation
+	ID string `json:"id"`
+
+	// PaymentID xendit internal system payment id
+	PaymentID string `json:"payment_id"`
+
+	// CallbackVirtualAccountID id of the VA that was paid
+	CallbackVirtualAccountID string `json:"callback_virtual_account_id"`
+
+	// ExternalID an ID of your choice which you provide
+	ExternalID string `json:"external_id"`
+
+	// BankCode bank code for the relevant bank
+	BankCode BankCode `json:"bank_code"`
+
+	// MerchantCode prefix for the Virtual Account
+	// this is xendit merchant code for aggregator
+	MerchantCode string `json:"merchant_code"`
+
+	// AccountNumber complete virtual account number
+	AccountNumber string `json:"account_number"`
+
+	// Amount that was paid to the VA
+	Amount float64 `json:"amount"`
+
+	// SenderName of the end user name that paid into the VA
+	SenderName string `json:"sender_name"`
+
+	// TransactionTimestamp timestamp of VA expiration time
+	// Timezone UTC+0
+	TransactionTimestamp time.Time `json:"transaction_timestamp"`
+
+	// PaymentDetail additional information from the Bank
+	PaymentDetail struct {
+		// Remark that is inputted by the payer when they are about to make a payment
+		Remark string `json:"remark"`
+	} `json:"payment_detail"`
+}
+
+// CreateVirtualAccountParam define payload or parameter for CreateRequest Payment Channel Virtual Account Bank
+type CreateVirtualAccountParam struct {
+	// ExternalID an ID of your choice which you provide
+	//
+	// Default: ""
+	ExternalID string `json:"external_id"`
+
+	// BankCode bank code for the relevant bank
+	//
+	// Default: ""
+	BankCode BankCode `json:"bank_code"`
+
+	// Name of virtual account
+	//
+	// Default: ""
+	Name string `json:"name"`
+
+	// VirtualAccountNumber complete virtual account number
+	//
+	// Default: ""
+	VirtualAccountNumber string `json:"virtual_account_number,omitempty"`
+
+	// IsSingleUse there are 2 types of va
+	// - true: va will be inactive automatically when payment is success
+	// - false: remain active when payment is success and can continue to
+	//         receive payment using the same VA
+	//
+	// Default: false
+	IsSingleUse bool `json:"is_single_use"`
+
+	// IsClosed there are 2 types of va
+	// - true: means your customer can only pay amount specified by you.
+	//        payment will reject if attempted payment amount deviates from the amount you specified
+	// - false: means your customer can pay any amount to the Virtual Account
+	//
+	// Default: false
+	IsClosed bool `json:"is_closed"`
+
+	// ExpectedAmount required amount to be paid by your customer for Closed VA (is_closed: true)
+	// there has minimum payment on each bank
+	//
+	// For BankMandiri, BankBNI, BankBJB, BankBRI, BankBSI, BankSahabatSampoerna:
+	//    minimum payment: Rp 1
+	//    maximum payment: Rp 50.000.000.000
+	// For BankPermata:
+	//    minimum payment: Rp 1
+	//    maximum payment: Rp 9.999.999.999
+	// For BankBCA:
+	//    minimum payment: Rp 10.000
+	//    maximum payment: Rp 999.999.999.999
+	// For BankDBS:
+	//    minimum payment: USD 1
+	//    maximum payment: USD 50,000,000,000
+	//
+	// Default: 0
+	ExpectedAmount float64 `json:"expected_amount,omitempty"`
+
+	// SuggestedAmount for the VA. only supported for Mandiri and BRI VA
+	//
+	// Default: 0
+	SuggestedAmount float64 `json:"suggested_amount,omitempty"`
+
+	// ExpirationDate timestamp of VA expiration time
+	// Timezone UTC+0
+	//
+	// Default: +31 years from creation date (request create virtual account)
+	ExpirationDate time.Time `json:"expiration_date,omitempty"`
+
+	// Description of the VA that will be displayed in payment interface
+	//
+	// Default: ""
+	Description string `json:"description,omitempty"`
+}
+
+// UpdateVirtualAccountParam define payload or parameter for UpdateRequest Virtual Account created Before
+type UpdateVirtualAccountParam struct {
+	// ID of the virtual account created before
+	//
+	// Default: ""
+	ID string `json:"id"`
+
+	// ExternalID an ID of your choice which you provide
+	//
+	// Default: ""
+	ExternalID string `json:"external_id,omitempty"`
+
+	// IsSingleUse there are 2 types of va
+	// - true: va will be inactive automatically when payment is success
+	// - false: remain active when payment is success and can continue to
+	//         receive payment using the same VA
+	//
+	// Default: false
+	IsSingleUse bool `json:"is_single_use,omitempty"`
+
+	// ExpectedAmount required amount to be paid by your customer for Closed VA (is_closed: true)
+	// there has minimum payment on each bank
+	//
+	// For BankMandiri, BankBNI, BankBJB, BankBRI, BankBSI, BankSahabatSampoerna:
+	//    minimum payment: Rp 1
+	//    maximum payment: Rp 50.000.000.000
+	// For BankPermata:
+	//    minimum payment: Rp 1
+	//    maximum payment: Rp 9.999.999.999
+	// For BankBCA:
+	//    minimum payment: Rp 10.000
+	//    maximum payment: Rp 999.999.999.999
+	// For BankDBS:
+	//    minimum payment: USD 1
+	//    maximum payment: USD 50,000,000,000
+	//
+	// Default: 0
+	ExpectedAmount float64 `json:"expected_amount,omitempty"`
+
+	// SuggestedAmount for the VA. only supported for Mandiri and BRI VA
+	//
+	// Default: 0
+	SuggestedAmount float64 `json:"suggested_amount,omitempty"`
+
+	// ExpirationDate timestamp of VA expiration time
+	// Timezone UTC+0
+	//
+	// Default: +31 years from creation date (request create virtual account)
+	ExpirationDate time.Time `json:"expiration_date"`
+
+	// Description of the VA that will be displayed in payment interface
+	//
+	// Default: ""
+	Description string `json:"description,omitempty"`
+}
