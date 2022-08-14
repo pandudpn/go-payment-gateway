@@ -53,26 +53,26 @@ We're supporting the payments:
 
 | Payment Channels                                  | Midtrans (Core API) | Xendit (Core API)  | OY! Indonesia (Core API) |
 |---------------------------------------------------|:-------------------:|:------------------:|:------------------------:|
-| BCA Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| BCA Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |       :hourglass:        |
-| BNI Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| BNI Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |       :hourglass:        |
-| BRI Virtual Account (Open Amount)                 | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| BRI Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |       :hourglass:        |
-| Mandiri Virtual Account (Open Amount)             | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| Mandiri Virtual Account (Closed Amount)           |         :x:         |    :hourglass:     |       :hourglass:        |
-| Permata Virtual Account (Open Amount)             | :white_check_mark:  |    :hourglass:     |       :hourglass:        |
-| Permata Virtual Account (Closed Amount)           |         :x:         |    :hourglass:     |       :hourglass:        |
-| BJB Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
-| BJB Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |           :x:            |
-| BSI Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
-| BSI Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |           :x:            |
-| CIMB Virtual Account (Open Amount)                |         :x:         |    :hourglass:     |       :hourglass:        |
-| CIMB Virtual Account (Closed Amount)              |         :x:         |    :hourglass:     |       :hourglass:        |
-| DBS Virtual Account (Open Amount)                 |         :x:         |    :hourglass:     |           :x:            |
-| DBS Virtual Account (Closed Amount)               |         :x:         |    :hourglass:     |           :x:            |
-| Sahabat Sampoerna Virtual Account (Open Amount)   |         :x:         |    :hourglass:     |           :x:            |
-| Sahabat Sampoerna Virtual Account (Closed Amount) |         :x:         |    :hourglass:     |           :x:            |
+| BCA Virtual Account (Open Amount)                 | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
+| BCA Virtual Account (Closed Amount)               |         :x:         | :white_check_mark: |       :hourglass:        |
+| BNI Virtual Account (Open Amount)                 | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
+| BNI Virtual Account (Closed Amount)               |         :x:         | :white_check_mark: |       :hourglass:        |
+| BRI Virtual Account (Open Amount)                 | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
+| BRI Virtual Account (Closed Amount)               |         :x:         | :white_check_mark: |       :hourglass:        |
+| Mandiri Virtual Account (Open Amount)             | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
+| Mandiri Virtual Account (Closed Amount)           |         :x:         | :white_check_mark: |       :hourglass:        |
+| Permata Virtual Account (Open Amount)             | :white_check_mark:  | :white_check_mark: |       :hourglass:        |
+| Permata Virtual Account (Closed Amount)           |         :x:         | :white_check_mark: |       :hourglass:        |
+| BJB Virtual Account (Open Amount)                 |         :x:         | :white_check_mark: |           :x:            |
+| BJB Virtual Account (Closed Amount)               |         :x:         | :white_check_mark: |           :x:            |
+| BSI Virtual Account (Open Amount)                 |         :x:         | :white_check_mark: |           :x:            |
+| BSI Virtual Account (Closed Amount)               |         :x:         | :white_check_mark: |           :x:            |
+| CIMB Virtual Account (Open Amount)                |         :x:         | :white_check_mark: |       :hourglass:        |
+| CIMB Virtual Account (Closed Amount)              |         :x:         | :white_check_mark: |       :hourglass:        |
+| DBS Virtual Account (Open Amount)                 |         :x:         | :white_check_mark: |           :x:            |
+| DBS Virtual Account (Closed Amount)               |         :x:         | :white_check_mark: |           :x:            |
+| Sahabat Sampoerna Virtual Account (Open Amount)   |         :x:         | :white_check_mark: |           :x:            |
+| Sahabat Sampoerna Virtual Account (Closed Amount) |         :x:         | :white_check_mark: |           :x:            |
 | BTPN Virtual Account (Open Amount)                |         :x:         |        :x:         |       :hourglass:        |
 | BTPN Virtual Account (Closed Amount)              |         :x:         |        :x:         |       :hourglass:        |
 
