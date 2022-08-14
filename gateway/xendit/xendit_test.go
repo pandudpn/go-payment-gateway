@@ -3,6 +3,7 @@ package xendit_test
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/pandudpn/go-payment-gateway"
 	"github.com/pandudpn/go-payment-gateway/gateway/xendit"
@@ -75,5 +76,47 @@ func getMockParamsEWalletBytes() []byte {
 func getMockChargeResponseEWallet() *xendit.ChargeResponse {
 	return &xendit.ChargeResponse{
 		ID: "id-test",
+	}
+}
+
+func getMockCreateVirtualAccount() *xendit.CreateVirtualAccountParam {
+	layoutDateTime := "2006-01-02T15:04:05"
+	expired, _ := time.Parse(layoutDateTime, "2022-08-17T23:59:59")
+
+	return &xendit.CreateVirtualAccountParam{
+		ExternalID:           "external-id-test",
+		ExpectedAmount:       10000,
+		BankCode:             xendit.BankBCA,
+		ExpirationDate:       expired,
+		IsClosed:             true,
+		IsSingleUse:          true,
+		Name:                 "Pandu dwi Putra",
+		VirtualAccountNumber: "9999345678",
+	}
+}
+
+func getMockCreateVirtualAccountBytes() []byte {
+	b, _ := json.Marshal(getMockCreateVirtualAccount())
+
+	return b
+}
+
+func getMockVirtualAccount() *xendit.VirtualAccount {
+	layoutDateTime := "2006-01-02T15:04:05"
+	expired, _ := time.Parse(layoutDateTime, "2022-08-17T23:59:59")
+
+	return &xendit.VirtualAccount{
+		ID:             "62f901c179e165937168ffc5",
+		Name:           "Pandu dwi Putra",
+		IsClosed:       true,
+		IsSingleUse:    true,
+		BankCode:       xendit.BankBCA,
+		ExpirationDate: expired,
+		ExpectedAmount: 10000,
+		Currency:       xendit.IDR,
+		ExternalID:     "external-id-test",
+		Status:         xendit.PendingVA,
+		AccountNumber:  "107669999345678",
+		MerchantCode:   "10766",
 	}
 }
