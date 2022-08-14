@@ -106,7 +106,7 @@ func getMockVirtualAccount() *xendit.VirtualAccount {
 	expired, _ := time.Parse(layoutDateTime, "2022-08-17T23:59:59")
 
 	return &xendit.VirtualAccount{
-		ID:             "62f901c179e165937168ffc5",
+		ID:             "id-virtual-account-testing",
 		Name:           "Pandu dwi Putra",
 		IsClosed:       true,
 		IsSingleUse:    true,
@@ -119,4 +119,23 @@ func getMockVirtualAccount() *xendit.VirtualAccount {
 		AccountNumber:  "107669999345678",
 		MerchantCode:   "10766",
 	}
+}
+
+func getMockUpdateVirtualAccount() *xendit.UpdateVirtualAccountParam {
+	layoutDateTime := "2006-01-02T15:04:05"
+	expired, _ := time.Parse(layoutDateTime, "2022-08-17T23:59:59")
+
+	return &xendit.UpdateVirtualAccountParam{
+		ExternalID:     "external-id-test",
+		ExpectedAmount: 10000,
+		ExpirationDate: expired,
+		IsSingleUse:    true,
+		ID:             "id-virtual-account-testing",
+	}
+}
+
+func getMockUpdateVirtualAccountBytes() []byte {
+	b, _ := json.Marshal(getMockUpdateVirtualAccount())
+
+	return b
 }

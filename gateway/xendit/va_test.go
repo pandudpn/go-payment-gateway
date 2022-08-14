@@ -314,3 +314,115 @@ func TestCreateVirtualAccount_12(t *testing.T) {
 	assert.Nil(t, result, "result should be nil")
 	assert.NotNil(t, err, "error should not to be nil")
 }
+
+func TestUpdateVirtualAccount_1(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	updateVa := getMockUpdateVirtualAccount()
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := xendit.UpdateVirtualAccount(updateVa, opts)
+
+	assert.NotNil(t, result, "result should not to be nil")
+	assert.Nil(t, err, "error should be nil")
+}
+
+func TestUpdateVirtualAccount_2(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	updateVa := getMockUpdateVirtualAccount()
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(http.ErrHandlerTimeout)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := xendit.UpdateVirtualAccount(updateVa, opts)
+
+	assert.Nil(t, result, "result should be nil")
+	assert.NotNil(t, err, "error should not to be nil")
+}
+
+func TestUpdateVirtualAccount_3(t *testing.T) {
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	updateVa := getMockUpdateVirtualAccount()
+	updateVa.ID = ""
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := xendit.UpdateVirtualAccount(updateVa, opts)
+
+	assert.Nil(t, result, "result should be nil")
+	assert.NotNil(t, err, "error should not to be nil")
+}
+
+func TestUpdateVirtualAccountWithContext_1(t *testing.T) {
+	ctx := context.Background()
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock request
+	updateVa := getMockUpdateVirtualAccount()
+
+	// doing mock call
+	mockApiRequest.
+		On("Call", mock.Anything, http.MethodPost, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := xendit.UpdateVirtualAccountWithContext(ctx, updateVa, opts)
+
+	assert.NotNil(t, result, "result should not to be nil")
+	assert.Nil(t, err, "error should be nil")
+}
+
+func TestUpdateVirtualAccountWithContext_2(t *testing.T) {
+	ctx := context.Background()
+	// mockApiRequest interface
+	// for mocking Call API
+	mockApiRequest := mocks.NewApiRequestInterface(t)
+
+	// mock options
+	mockOptions := getMockOptionsSandBox()
+	mockOptions.ApiCall = mockApiRequest
+
+	opts, _ := pg.NewOption(mockOptions)
+
+	result, err := xendit.UpdateVirtualAccountWithContext(ctx, nil, opts)
+
+	assert.Nil(t, result, "result should be nil")
+	assert.NotNil(t, err, "error should not to be nil")
+}
