@@ -38,9 +38,9 @@ func createVirtualAccount(opts *pg.Options) *xendit.VirtualAccount {
 		BankCode:             xendit.BankBCA,
 		ExpirationDate:       expired,
 		IsClosed:             true,
-		IsSingleUse:          true,
+		IsSingleUse:          false,
 		Name:                 "Pandu dwi Putra",
-		VirtualAccountNumber: "9999345678",
+		VirtualAccountNumber: "9999345673",
 	}
 
 	res, err := xendit.CreateVirtualAccount(va, opts)
@@ -50,6 +50,24 @@ func createVirtualAccount(opts *pg.Options) *xendit.VirtualAccount {
 
 	log.Println("response create virtual-account", *res)
 	return res
+}
+
+func updateVirtualAccount(id string, opts *pg.Options) {
+	expired := time.Now().Add(time.Duration(24) * time.Hour)
+	va := &xendit.UpdateVirtualAccountParam{
+		ID:             id,
+		ExternalID:     uuid.NewString(),
+		ExpectedAmount: 1000000,
+		ExpirationDate: expired,
+		IsSingleUse:    true,
+	}
+
+	res, err := xendit.UpdateVirtualAccount(va, opts)
+	if err != nil {
+		log.Fatalln("failed to update virtual account with error", err)
+	}
+
+	log.Println("response update virtual-account", *res)
 }
 
 func main() {
@@ -69,5 +87,8 @@ func main() {
 	// ewallet(opts)
 
 	// create virtual account
-	_ = createVirtualAccount(opts)
+	res := createVirtualAccount(opts)
+
+	// update vritual account
+	updateVirtualAccount(res.ID, opts)
 }
