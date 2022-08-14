@@ -50,7 +50,11 @@ func createChargeXendit(params interface{}, opts *pg.Options) (*xendit, error) {
 		return nil, pg.ErrInvalidCredentials
 	}
 
-	payload, _ := json.Marshal(params)
+	var payload []byte
+	switch param := params.(type) {
+	default:
+		payload, _ = json.Marshal(param)
+	}
 
 	// create instance xendit
 	m := &xendit{
