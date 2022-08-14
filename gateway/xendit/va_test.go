@@ -325,7 +325,7 @@ func TestUpdateVirtualAccount_1(t *testing.T) {
 
 	// doing mock call
 	mockApiRequest.
-		On("Call", mock.Anything, http.MethodPost, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+		On("Call", mock.Anything, http.MethodPatch, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	// mock options
 	mockOptions := getMockOptionsSandBox()
@@ -349,7 +349,7 @@ func TestUpdateVirtualAccount_2(t *testing.T) {
 
 	// doing mock call
 	mockApiRequest.
-		On("Call", mock.Anything, http.MethodPost, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(http.ErrHandlerTimeout)
+		On("Call", mock.Anything, http.MethodPatch, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(http.ErrHandlerTimeout)
 
 	// mock options
 	mockOptions := getMockOptionsSandBox()
@@ -395,7 +395,7 @@ func TestUpdateVirtualAccountWithContext_1(t *testing.T) {
 
 	// doing mock call
 	mockApiRequest.
-		On("Call", mock.Anything, http.MethodPost, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+		On("Call", mock.Anything, http.MethodPatch, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	// mock options
 	mockOptions := getMockOptionsSandBox()
