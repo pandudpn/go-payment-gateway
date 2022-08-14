@@ -2,6 +2,7 @@ package xendit
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -25,6 +26,9 @@ type xendit struct {
 
 	// uri http target to charge payments
 	uri string
+
+	// pathParams parameter on URL Path
+	pathParams string
 
 	// params request to charge payment
 	params []byte
@@ -51,15 +55,21 @@ func createChargeXendit(params interface{}, opts *pg.Options) (*xendit, error) {
 	}
 
 	var payload []byte
+	var pathParams string
+
 	switch param := params.(type) {
+	case *UpdateVirtualAccountParam:
+		pathParams = fmt.Sprintf("/%s", param.ID)
+		payload, _ = json.Marshal(param)
 	default:
 		payload, _ = json.Marshal(param)
 	}
 
 	// create instance xendit
 	m := &xendit{
-		opts:   opts,
-		params: payload,
+		opts:       opts,
+		pathParams: pathParams,
+		params:     payload,
 	}
 
 	return m, nil
