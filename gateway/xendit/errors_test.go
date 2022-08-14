@@ -8,19 +8,21 @@ import (
 )
 
 func TestGetErrorCode_Found(t *testing.T) {
-	errorCode := "CHANNEL_UNAVAILABLE"
+	mockChargeRes := getMockChargeResponseEWallet()
+	mockChargeRes.ErrorCode = "API_VALIDATION_ERROR"
 
-	expected := xendit.ErrChannelUnavailable
+	expected := xendit.ErrAPIValidation
 
-	f := xendit.GetErrorCode(errorCode)
+	f := xendit.GetErrorCode(*mockChargeRes)
 	assert.Equal(t, expected, f)
 }
 
 func TestGetErrorCode_NotFound(t *testing.T) {
-	errorCode := "abc"
+	mockChargeRes := getMockChargeResponseEWallet()
+	mockChargeRes.ErrorCode = "API"
 
 	expected := xendit.ErrUnknown
 
-	f := xendit.GetErrorCode(errorCode)
+	f := xendit.GetErrorCode(*mockChargeRes)
 	assert.Equal(t, expected, f)
 }
