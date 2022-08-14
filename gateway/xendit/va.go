@@ -49,6 +49,12 @@ func (x *xendit) createVirtualAccount(ctx context.Context) (*VirtualAccount, err
 		return nil, err
 	}
 
+	// check error code
+	err = GetErrorCode(va)
+	if err != nil {
+		return nil, err
+	}
+
 	return &va, nil
 }
 
@@ -88,6 +94,12 @@ func (x *xendit) updateVirtualAccount(ctx context.Context) (*VirtualAccount, err
 	header.Set("Authorization", utils.SetBasicAuthorization(x.opts.ServerKey, ""))
 
 	err = x.opts.ApiCall.Call(ctx, http.MethodPatch, x.uri, header, x.params, &va)
+	if err != nil {
+		return nil, err
+	}
+
+	// check error code
+	err = GetErrorCode(va)
 	if err != nil {
 		return nil, err
 	}

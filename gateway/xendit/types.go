@@ -327,6 +327,14 @@ type VirtualAccount struct {
 
 	// Status of VA
 	Status StatusVA `json:"status"`
+
+	// ErrorCode by end user or e-wallet issuer
+	// the failure_code is notified to the merchant
+	// in the payment callback
+	ErrorCode string `json:"error_code"`
+
+	// Message error description
+	Message string `json:"message"`
 }
 
 // VirtualAccountPayment params body from xendit to our callback

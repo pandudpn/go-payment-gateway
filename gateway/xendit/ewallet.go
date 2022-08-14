@@ -49,5 +49,11 @@ func (x *xendit) createEWalletCharge(ctx context.Context) (*ChargeResponse, erro
 		return nil, err
 	}
 
+	// check error code
+	err = GetErrorCode(chargeRes)
+	if err != nil {
+		return nil, err
+	}
+
 	return &chargeRes, nil
 }
