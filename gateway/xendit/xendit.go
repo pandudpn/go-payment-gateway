@@ -37,9 +37,11 @@ func createChargeXendit(params interface{}, opts *pg.Options) (*xendit, error) {
 	}
 
 	// validation parameters
-	err := ValidationParams(params)
-	if err != nil {
-		return nil, err
+	if reflect.ValueOf(params).Kind() == reflect.Ptr || reflect.ValueOf(params).Kind() == reflect.Struct {
+		err := ValidationParams(params)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// create uri and check credentials
