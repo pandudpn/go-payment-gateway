@@ -2,6 +2,9 @@ package xendit
 
 import (
 	"errors"
+	"reflect"
+	
+	pg "github.com/pandudpn/go-payment-gateway"
 )
 
 // ErrorCode common error in e-wallet payments
@@ -111,7 +114,25 @@ var errorCodeMap = map[string]ErrorCode{
 }
 
 // GetErrorCode getting error code from response into interface error
-func GetErrorCode(er string) ErrorCode {
+func GetErrorCode(param interface{}) ErrorCode {
+	var (
+		er  string
+		msg string
+	)
+	switch p := param.(type) {
+	case VirtualAccount:
+		er = p.ErrorCode
+		msg = p.Message
+	case ChargeResponse:
+		er = p.ErrorCode
+		msg = p.Message
+	}
+
+	if reflect.ValueOf(er).IsZero() {
+		return nil
+	}
+
+	pg.Log.Error(msg)
 	if v, ok := errorCodeMap[er]; ok {
 		return v
 	}
