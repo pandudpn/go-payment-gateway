@@ -5,25 +5,25 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/pandudpn/go-payment-gateway"
+	pg "github.com/pandudpn/go-payment-gateway"
 	"github.com/retgits/creditcard"
 )
 
 // ValidationParams required for any payment method
 func ValidationParams(params interface{}) error {
-	switch params.(type) {
+	switch param := params.(type) {
 	case *EWallet:
-		return validationEWallet(params.(*EWallet))
+		return validationEWallet(param)
 	case *BankTransferCreateParams:
-		return validationBankTransfer(params.(*BankTransferCreateParams))
+		return validationBankTransfer(param)
 	case *CardToken:
-		return validationCardToken(params.(*CardToken))
+		return validationCardToken(param)
 	case *CardRegister:
-		return validationCardRegister(params.(*CardRegister))
+		return validationCardRegister(param)
 	case *CardPayment:
-		return validationCardPayment(params.(*CardPayment))
+		return validationCardPayment(param)
 	case *LinkAccountPay:
-		return validationLinkAccountPay(params.(*LinkAccountPay))
+		return validationLinkAccountPay(param)
 	default:
 		return pg.ErrUnimplemented
 	}

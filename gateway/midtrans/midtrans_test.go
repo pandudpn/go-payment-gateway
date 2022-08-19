@@ -34,20 +34,8 @@ func getMockUrlProduction() string {
 	return "https://api.midtrans.com/v2/charge"
 }
 
-func getMockUrlCardTokenProduction() string {
-	return "https://api.midtrans.com/v2/token"
-}
-
-func getMockUrlRegisterCardProduction() string {
-	return "https://api.midtrans.com/v2/card/register"
-}
-
 func getMockUrlCreatePayAccountSandBox() string {
 	return "https://api.sandbox.midtrans.com/v2/pay/account"
-}
-
-func getMockUrlCreatePayAccountProduction() string {
-	return "https://api.midtrans.com/v2/pay/account"
 }
 
 func getMockOptionsSandBox() *pg.Options {
@@ -123,44 +111,6 @@ func getMockParamsLinkAccountPayBytes() []byte {
 	return b
 }
 
-func getMockLinkAccountPayResponse() *midtrans.LinkAccountPayResponse {
-	return &midtrans.LinkAccountPayResponse{
-		PaymentType: midtrans.PaymentTypeGopay,
-		StatusCode:  "201",
-		AccountID:   "account-id-testing",
-		Actions: []*midtrans.Action{
-			{
-				Name:   "activation-deeplink",
-				Method: "GET",
-				URL:    "https://api.sandbox.midtrans.com/v2/pay/account/gpar_account-id-testing/link",
-			},
-		},
-		AccountStatus: "PENDING",
-	}
-}
-
-func getMockChargeResponseEWallet() *midtrans.ChargeResponse {
-	return &midtrans.ChargeResponse{
-		ID:                "id-test",
-		StatusCode:        "201",
-		StatusMessage:     "GoPay transaction is created",
-		TransactionID:     "transaction-id-test",
-		OrderID:           "order-id-test",
-		GrossAmount:       "10000",
-		PaymentType:       midtrans.PaymentTypeGopay,
-		TransactionStatus: "settlement",
-		FraudStatus:       "accept",
-		TransactionTime:   "2022-07-30 10:00:00",
-		Actions: []*midtrans.Action{
-			{
-				Name:   "deeplink-redirect",
-				Method: "GET",
-				URL:    "https://simulator.sandbox.midtrans.com/gopay/partner/app/payment-pin?id=fe51909d-cf14-42ff-af57-788fe97a74e3",
-			},
-		},
-	}
-}
-
 func getMockParamsBankTransfer() *midtrans.BankTransferCreateParams {
 	return &midtrans.BankTransferCreateParams{
 		PaymentType: midtrans.PaymentTypeBCA,
@@ -188,27 +138,6 @@ func getMockParamsBankTransferBytes() []byte {
 	return b
 }
 
-func getMockChargeResponseBankTransfer() *midtrans.ChargeResponse {
-	return &midtrans.ChargeResponse{
-		ID:                "id-test",
-		StatusCode:        "201",
-		StatusMessage:     "Success, Bank Transfer transaction is created",
-		TransactionID:     "transaction-id-test",
-		OrderID:           "order-id-test",
-		GrossAmount:       "10000",
-		PaymentType:       midtrans.PaymentTypeBCA,
-		TransactionStatus: "pending",
-		FraudStatus:       "accept",
-		TransactionTime:   "2022-07-30 10:00:00",
-		VANumbers: []*midtrans.BankTransfer{
-			{
-				Bank:     midtrans.BankBCA,
-				VANumber: "268192122274139",
-			},
-		},
-	}
-}
-
 func getMockParamsCardToken() *midtrans.CardToken {
 	return &midtrans.CardToken{
 		CardNumber:   "5211111111111117",
@@ -218,21 +147,11 @@ func getMockParamsCardToken() *midtrans.CardToken {
 	}
 }
 
-func getMockParamsCardRegisterBytes() []byte {
-	b, _ := json.Marshal(getMockParamsCardToken())
-	return b
-}
-
 func getMockParamsCardTokenWithSavedTokenId() *midtrans.CardToken {
 	return &midtrans.CardToken{
 		TokenID: "token-id-testing",
 		CardCvv: "123",
 	}
-}
-
-func getMockParamsCardTokenWithSavedTokenIdBytes() []byte {
-	b, _ := json.Marshal(getMockParamsCardTokenWithSavedTokenId())
-	return b
 }
 
 func getMockParamsRegisterCard() *midtrans.CardRegister {
@@ -242,11 +161,6 @@ func getMockParamsRegisterCard() *midtrans.CardRegister {
 		CardExpYear:  "2022",
 		CardExpMonth: "12",
 	}
-}
-
-func getMockParamsRegisterCardBytes() []byte {
-	b, _ := json.Marshal(getMockParamsRegisterCard())
-	return b
 }
 
 func getMockQueryParamsCardToken() string {
@@ -260,11 +174,6 @@ func getMockQueryParamsCardToken() string {
 	return u.Encode()
 }
 
-func getMockQueryParamsCardTokenBytes() []byte {
-	b, _ := json.Marshal(getMockQueryParamsCardToken())
-	return b
-}
-
 func getMockQueryParamsCardTokenBySavedTokenId() string {
 	u := url.Values{}
 	u.Set("card_cvv", "123")
@@ -272,11 +181,6 @@ func getMockQueryParamsCardTokenBySavedTokenId() string {
 	u.Set("token_id", "token-id-testing")
 
 	return u.Encode()
-}
-
-func getMockQueryParamsCardTokenBySavedTokenIdBytes() []byte {
-	b, _ := json.Marshal(getMockQueryParamsCardTokenBySavedTokenId())
-	return b
 }
 
 func getMockParamsCardCharge() *midtrans.CardPayment {

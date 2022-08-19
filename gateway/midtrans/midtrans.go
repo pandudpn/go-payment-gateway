@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/pandudpn/go-payment-gateway"
+	pg "github.com/pandudpn/go-payment-gateway"
 )
 
 const (
@@ -62,33 +62,29 @@ func createChargeMidtrans(params interface{}, opts *pg.Options) (*midtrans, erro
 
 	// switch statement for handling queryParam or bodyParam
 	var payload []byte
-	switch params.(type) {
+	switch param := params.(type) {
 	case *CardToken:
-		ct := params.(*CardToken)
-
 		u := url.Values{}
 		u.Set(clientKey, opts.ClientId)
-		u.Set(cardCvv, ct.CardCvv)
+		u.Set(cardCvv, param.CardCvv)
 
 		// use tokenId instead if exists
-		if !reflect.ValueOf(ct.TokenID).IsZero() {
-			u.Set(tokenId, ct.TokenID)
+		if !reflect.ValueOf(param.TokenID).IsZero() {
+			u.Set(tokenId, param.TokenID)
 		} else {
-			u.Set(cardNumber, ct.CardNumber)
-			u.Set(cardExpMonth, ct.CardExpMonth)
-			u.Set(cardExpYear, ct.CardExpYear)
+			u.Set(cardNumber, param.CardNumber)
+			u.Set(cardExpMonth, param.CardExpMonth)
+			u.Set(cardExpYear, param.CardExpYear)
 		}
 
 		payload = []byte(u.Encode())
 	case *CardRegister:
-		cr := params.(*CardRegister)
-
 		u := url.Values{}
 		u.Set(clientKey, opts.ClientId)
-		u.Set(cardCvv, cr.CardCvv)
-		u.Set(cardNumber, cr.CardNumber)
-		u.Set(cardExpMonth, cr.CardExpMonth)
-		u.Set(cardExpYear, cr.CardExpYear)
+		u.Set(cardCvv, param.CardCvv)
+		u.Set(cardNumber, param.CardNumber)
+		u.Set(cardExpMonth, param.CardExpMonth)
+		u.Set(cardExpYear, param.CardExpYear)
 
 		payload = []byte(u.Encode())
 	case string:
