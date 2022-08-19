@@ -83,7 +83,7 @@ We're supporting the payments:
   <summary>Notes</summary>
 
 > Payment channel Alfamart, customer can complete their payment at various stores under ***Alfa Group***.
-> 
+>
 > The supported stores are: **Alfamart**, **Alfamidi** and **DAN+DAN**
 
 </details>
