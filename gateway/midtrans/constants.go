@@ -1,5 +1,48 @@
 package midtrans
 
+// TransactionStatus status of payment transaction
+type TransactionStatus string
+
+const (
+	// Authorize means the payment card used for the transaction
+	// must be captured to process the balance
+	Authorize TransactionStatus = "authorize"
+
+	// Capture means transaction is success and card balance is captured successfully
+	Capture TransactionStatus = "capture"
+
+	// Settlement means transaction is successfully settled.
+	Settlement TransactionStatus = "settlement"
+
+	// Pending means transaction still wait to payment
+	Pending TransactionStatus = "pending"
+
+	// Deny means payments are rejected by the payment provider
+	// or Midtrans Fraud Detection System
+	Deny TransactionStatus = "deny"
+
+	// Cancel means the transaction is cancelled.
+	Cancel TransactionStatus = "cancel"
+
+	// Refund the transaction is marked to be refunded.
+	Refund TransactionStatus = "refund"
+
+	// PartialRefund the transaction is marked to be partially refunded
+	PartialRefund TransactionStatus = "partial_refund"
+
+	// Chargeback the transaction is marked to be charged back
+	Chargeback TransactionStatus = "chargeback"
+
+	// PartialChargeback the transaction is marked to be partially charged back
+	PartialChargeback TransactionStatus = "partial_chargeback"
+
+	// Expire the transaction is not available for processing. because the payment was delayed
+	Expire TransactionStatus = "expire"
+
+	// Failure means unexpected error occurred during transaction processing
+	Failure TransactionStatus = "failure"
+)
+
 type PaymentType string
 
 // list midtrans payment type
@@ -67,4 +110,60 @@ const (
 
 	// BankCIMB code for Bank CIMB Niaga
 	BankCIMB BankCode = "cimb"
+)
+
+// Unit of expiry duration
+type ExpiryUnitDuration string
+
+const (
+	// Second payment will expired in second
+	Second ExpiryUnitDuration = "second"
+
+	// Minute payment will expired in minute
+	Minute ExpiryUnitDuration = "minute"
+
+	// Hour payment will expired in hour
+	Hour ExpiryUnitDuration = "hour"
+
+	// Day payment will expired in day
+	Day ExpiryUnitDuration = "day"
+)
+
+type FraudStatus string
+
+const (
+	// FraudAccept means approved by FDS
+	FraudAccept FraudStatus = "accept"
+
+	// FraudChallenge means questioned by FDS
+	FraudChallenge FraudStatus = "challenge"
+
+	// FraudDeny denied by FDS. transaction automatically failed
+	FraudDeny FraudStatus = "deny"
+)
+
+type CardType string
+
+const (
+	// Debit card
+	Debit CardType = "debit"
+
+	// Credit card
+	Credit CardType = "credit"
+)
+
+type AccountStatus string
+
+const (
+	// AccountPending means account waiting to linked
+	AccountPending AccountStatus = "PENDING"
+
+	// AccountEnabled success to linked
+	AccountEnabled AccountStatus = "ENABLED"
+
+	// AccountExpired time to linked is expired
+	AccountExpired AccountStatus = "EXPIRED"
+
+	// AccountDisabled account already to unlinked
+	AccountDisabled AccountStatus = "DISABLED"
 )

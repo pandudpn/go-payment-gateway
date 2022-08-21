@@ -1,5 +1,7 @@
 package midtrans
 
+import "time"
+
 // TransactionDetail for customer
 type TransactionDetail struct {
 	// OrderID is Reference ID for midtrans
@@ -360,12 +362,7 @@ type LinkAccountPayResponse struct {
 	AccountID string `json:"account_id"`
 
 	// AccountStatus status of the account
-	// possible values are:
-	// - PENDING
-	// - EXPIRED
-	// - ENABLED
-	// - DISABLED
-	AccountStatus string `json:"account_status"`
+	AccountStatus AccountStatus `json:"account_status"`
 
 	// ChannelResponseCode response code from payment channel provider
 	ChannelResponseCode string `json:"channel_response_code"`
@@ -541,6 +538,43 @@ type CardResponse struct {
 	Hash string `json:"hash"`
 }
 
+// SellerDetail detail of seller(s) where the customer purchased from.
+type SellerDetail struct {
+	// ID seller
+	ID string `json:"id"`
+
+	// Name seller
+	Name string `json:"name"`
+
+	// Email seller
+	Email string `json:"email"`
+
+	// URL seller http url (link to their shop)
+	URL string `json:"url"`
+
+	// Address seller
+	Address *CustomerAddress `json:"address"`
+}
+
+// CustomExpiry details of the expiry time of the specific transaction
+type CustomExpiry struct {
+	// OrderTime timestamp at which the order is created
+	OrderTime time.Time `json:"order_time"`
+
+	// ExpiryDuration time duration for which the payment remains valid
+	ExpiryDuration int `json:"expiry_duration"`
+
+	// Unit for expiry duration
+	// possible values are:
+	// - Second
+	// - Minute
+	// - Hour
+	// - Day
+	//
+	// Default: Minute
+	Unit ExpiryUnitDuration `json:"unit"`
+}
+
 // ChargeResponse charge response and notifications
 type ChargeResponse struct {
 	// ID of request
@@ -568,22 +602,13 @@ type ChargeResponse struct {
 	PaymentType PaymentType `json:"payment_type"`
 
 	// TransactionTime timestamp of transaction in ISO 8601 format with timezone GMT+7
-	TransactionTime string `json:"transaction_time"`
+	TransactionTime time.Time `json:"transaction_time"`
 
 	// TransactionStatus status of transaction.
-	// values:
-	// - pending
-	// - settlement
-	// - expire
-	// - deny
-	TransactionStatus string `json:"transaction_status"`
+	TransactionStatus TransactionStatus `json:"transaction_status"`
 
 	// FraudStatus detection result by Fraud Detection System (FDS)
-	// values:
-	// - accept : approved by FDS
-	// - challenge : questioned by FDS
-	// - deny : denied by FDS. transaction automatically failed
-	FraudStatus string `json:"fraud_status"`
+	FraudStatus FraudStatus `json:"fraud_status"`
 
 	// ChannelResponseCode response code from payment channel provider
 	ChannelResponseCode string `json:"channel_response_code"`
@@ -619,8 +644,5 @@ type ChargeResponse struct {
 	MaskedCard string `json:"masked_card"`
 
 	// CardType type of card used
-	// possible values:
-	// - credit
-	// - debit
-	CardType string `json:"card_type"`
+	CardType CardType `json:"card_type"`
 }
