@@ -24,6 +24,8 @@ func ValidationParams(params interface{}) error {
 		return validationCardPayment(param)
 	case *LinkAccountPay:
 		return validationLinkAccountPay(param)
+	case *PaylaterCreateParams:
+		return validationPaylater(param)
 	default:
 		return pg.ErrUnimplemented
 	}
@@ -243,4 +245,37 @@ func validationLinkAccountPay(lap *LinkAccountPay) error {
 // checkPaymentTypeLinkAccountPay eligible for payment type PayAccount
 func checkPaymentTypeLinkAccountPay(pt PaymentType) bool {
 	return pt == PaymentTypeGopay
+}
+
+// validationPaylater params required for cardless credit payment (paylater)
+func validationPaylater(pcp *PaylaterCreateParams) error {
+	var err = pg.ErrInvalidParameter
+	// transactionDetails not exists
+	if pcp.TransactionDetails == nil || reflect.ValueOf(pcp.TransactionDetails.OrderID).IsZero() || pcp.TransactionDetails.GrossAmount < 100 {
+		return fmt.Errorf("%s. one of midtrans.TransactionDetail is missing or invalid", err)
+	}
+	// items not exists
+	if pcp.ItemDetails == nil || len(pcp.ItemDetails) < 1 {
+		return fmt.Errorf("%s. []midtrans.ItemDetail is required", err)
+	}
+
+	// make sure only gopay or shopeepay payment type
+	if !checkPaymentTypePaylater(pcp.PaymentType) {
+		return fmt.Errorf("invalid payment_type. possible values are 'PaymentTypeAkulaku' or 'PaymentTypeKredivo'")
+	}
+
+	return nil
+}
+
+// checkPaymentTypePaylater eligible for payment type Cardless Credit (Paylater)
+func checkPaymentTypePaylater(pt PaymentType) bool {
+	var lists = []PaymentType{PaymentTypeAkulaku, PaymentTypeKredivo}
+
+	for l := range lists {
+		if lists[l] == pt {
+			return true
+		}
+	}
+
+	return false
 }

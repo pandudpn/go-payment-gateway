@@ -315,6 +315,36 @@ type GopayPartner struct {
 	RedirectURL string `json:"redirect_url"`
 }
 
+// PaylaterCreateParam paramters to create Cardless Credit (Paylater)
+type PaylaterCreateParams struct {
+	// PaymentType set Bank Transfer payment method
+	//
+	// Default: ""
+	PaymentType PaymentType `json:"payment_type"`
+
+	// TransactionDetails the details of the specific transactions
+	TransactionDetails *TransactionDetail `json:"transaction_details"`
+
+	// ItemDetails details of items purchased by customer
+	ItemDetails []*ItemDetail `json:"item_details"`
+
+	// CustomerDetails detail of customer
+	//
+	// Default: null
+	CustomerDetails *CustomerDetail `json:"customer_details,omitempty"`
+
+	// SellerDetails details of the sellers where the customer purchased from
+	//
+	// Default: null
+	SellerDetails *SellerDetail `json:"seller_details,omitempty"`
+
+	// CustomExpiry for customized expired time
+	// when it's empty, it will have default value expired time within 24 Hour
+	//
+	// Default: null
+	CustomExpiry *CustomExpiry `json:"custom_expiry"`
+}
+
 // PaymentOption additional data from the specific payment provider
 type PaymentOption struct {
 	// Name payment option

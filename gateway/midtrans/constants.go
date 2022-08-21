@@ -80,6 +80,12 @@ const (
 
 	// PaymentTypeCard is payment type for Credit Card or Debit Card from Midtrans Core API
 	PaymentTypeCard PaymentType = "credit_card"
+
+	// PaymentTypeAkulaku is payment type for paylater Akulaku from Midtrans Core API
+	PaymentTypeAkulaku PaymentType = "akulaku"
+
+	// PaymentTypeKredivo is payment type for paylater Kredivo from Midtrans Core API
+	PaymentTypeKredivo PaymentType = "kredivo"
 )
 
 // convert to String value or type
