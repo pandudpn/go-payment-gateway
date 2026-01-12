@@ -276,3 +276,21 @@ type QRISParams struct {
 	// Amount is a fixed amount QRIS (empty for dynamic QRIS)
 	Amount int64 `json:"amount,omitempty"`
 }
+
+// TokenResponse represents the response from Get Token API
+type TokenResponse struct {
+	// AccessToken is the OAuth access token
+	AccessToken string `json:"access_token"`
+
+	// TokenType is the type of token (e.g., "Bearer")
+	TokenType string `json:"token_type"`
+
+	// ExpiresIn is the token expiration time in seconds
+	ExpiresIn int64 `json:"expires_in"`
+
+	// RefreshToken is the refresh token (if provided)
+	RefreshToken string `json:"refresh_token,omitempty"`
+
+	// Scope is the token scope
+	Scope string `json:"scope,omitempty"`
+}

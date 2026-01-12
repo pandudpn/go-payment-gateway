@@ -21,6 +21,7 @@ type Provider interface {
 	Cancel(ctx context.Context, orderID string) error
 	VerifyWebhook(r *http.Request) bool
 	ParseWebhook(r *http.Request) (*WebhookEvent, error)
+	GetToken(ctx context.Context) (*TokenResponse, error)
 }
 
 // ProviderConfig holds the configuration for a provider
@@ -29,6 +30,7 @@ type ProviderConfig struct {
 	ServerKey   string
 	ClientKey   string
 	MerchantID  string
+	PrivateKey  string // RSA private key for asymmetric signature (Doku)
 	Timeout     int
 	SnapMode    bool
 	LogEnabled  bool
@@ -109,6 +111,7 @@ func createProvider(cfg *Config) (Provider, error) {
 		ServerKey:   cfg.ServerKey,
 		ClientKey:   cfg.ClientKey,
 		MerchantID:  cfg.MerchantID,
+		PrivateKey:  cfg.PrivateKey,
 		Timeout:     int(cfg.Timeout.Seconds()),
 		SnapMode:    cfg.SnapMode,
 		LogEnabled:  cfg.LogEnabled,
@@ -141,6 +144,13 @@ func (c *Client) ParseWebhook(r *http.Request) (*WebhookEvent, error) {
 
 	// Parse webhook
 	return c.provider.ParseWebhook(r)
+}
+
+// GetToken retrieves an OAuth access token from the provider
+// This is supported by Doku with asymmetric RSA signature
+// For Midtrans and Xendit, this returns an error as they use Basic Auth
+func (c *Client) GetToken(ctx context.Context) (*TokenResponse, error) {
+	return c.provider.GetToken(ctx)
 }
 
 // GetProvider returns the name of the current provider

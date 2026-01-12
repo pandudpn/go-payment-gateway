@@ -261,6 +261,12 @@ func (m *midtrans) VerifyWebhook(r *http.Request) bool {
 	return verifier.VerifyString(orderID, status, r.Header.Get("X-Signature"))
 }
 
+// GetToken retrieves an access token for the provider
+// Midtrans uses Basic Auth with Server Key, so this returns an error
+func (m *midtrans) GetToken(ctx context.Context) (*pg.TokenResponse, error) {
+	return nil, fmt.Errorf("GetToken API is not supported by %s. Midtrans uses Basic Auth with Server Key for authentication", ProviderName)
+}
+
 // ParseWebhook parses webhook payload
 func (m *midtrans) ParseWebhook(r *http.Request) (*pg.WebhookEvent, error) {
 	if err := r.ParseForm(); err != nil {

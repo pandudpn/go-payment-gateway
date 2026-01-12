@@ -22,6 +22,9 @@ type Config struct {
 	// MerchantID is the merchant ID (provider-specific)
 	MerchantID string
 
+	// PrivateKey is the RSA private key for asymmetric signature (Doku)
+	PrivateKey string
+
 	// Timeout is the HTTP request timeout
 	Timeout time.Duration
 
@@ -74,6 +77,13 @@ func WithMerchantID(id string) Option {
 	}
 }
 
+// WithPrivateKey sets the RSA private key for asymmetric signature
+func WithPrivateKey(key string) Option {
+	return func(c *Config) {
+		c.PrivateKey = key
+	}
+}
+
 // WithTimeout sets the HTTP request timeout
 func WithTimeout(timeout time.Duration) Option {
 	return func(c *Config) {
@@ -102,6 +112,7 @@ const (
 	EnvServerKey  = "PAYMENT_SERVER_KEY"
 	EnvClientKey  = "PAYMENT_CLIENT_KEY"
 	EnvMerchantID = "PAYMENT_MERCHANT_ID"
+	EnvPrivateKey = "PAYMENT_PRIVATE_KEY"
 	EnvTimeout    = "PAYMENT_TIMEOUT"
 	EnvSnap       = "PAYMENT_SNAP"
 	EnvLogging    = "PAYMENT_LOGGING"
@@ -115,6 +126,7 @@ func LoadConfigFromEnv() *Config {
 		ServerKey:   os.Getenv(EnvServerKey),
 		ClientKey:   os.Getenv(EnvClientKey),
 		MerchantID:  os.Getenv(EnvMerchantID),
+		PrivateKey:  os.Getenv(EnvPrivateKey),
 		Timeout:     30 * time.Second,
 		SnapMode:    os.Getenv(EnvSnap) == "true",
 		LogEnabled:  os.Getenv(EnvLogging) != "false",

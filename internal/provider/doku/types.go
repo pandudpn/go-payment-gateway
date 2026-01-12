@@ -128,3 +128,8 @@ type TransactionStatusResponse struct {
 	PaymentType       PaymentType    `json:"payment_type,omitempty"`
 	PaymentDate       *time.Time     `json:"payment_date,omitempty"`
 }
+
+// tokenResponse from Doku Get Token API
+type tokenResponse struct {
+	Token string `json:"token"`
+}

@@ -304,6 +304,12 @@ func (x *xendit) VerifyWebhook(r *http.Request) bool {
 	return verifier.Verify(r)
 }
 
+// GetToken retrieves an access token for the provider
+// Xendit uses Basic Auth with API Key, so this returns an error
+func (x *xendit) GetToken(ctx context.Context) (*pg.TokenResponse, error) {
+	return nil, fmt.Errorf("GetToken API is not supported by %s. Xendit uses Basic Auth with API Key for authentication", ProviderName)
+}
+
 // ParseWebhook parses webhook payload
 func (x *xendit) ParseWebhook(r *http.Request) (*pg.WebhookEvent, error) {
 	if err := r.ParseForm(); err != nil {

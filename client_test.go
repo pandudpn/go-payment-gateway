@@ -48,6 +48,10 @@ func (m *mockProvider) ParseWebhook(r *http.Request) (*WebhookEvent, error) {
 	return m.webhookEvent, m.webhookErr
 }
 
+func (m *mockProvider) GetToken(ctx context.Context) (*TokenResponse, error) {
+	return &TokenResponse{AccessToken: "mock-token"}, nil
+}
+
 // mockProviderFactory creates a mock provider for testing
 func mockProviderFactory(cfg *ProviderConfig) (Provider, error) {
 	return &mockProvider{name: "mock"}, nil
