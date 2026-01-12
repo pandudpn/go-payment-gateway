@@ -1,83 +1,173 @@
 package pg
 
 import (
-	"reflect"
+	"os"
+	"time"
 )
 
-var (
-	True  bool = true
-	False bool = false
-)
+// Config holds the configuration for the payment client
+type Config struct {
+	// Provider is the payment gateway provider name (midtrans, xendit, doku)
+	Provider string
 
-// Options is the wrap of the params needed for API Call
-type Options struct {
-	// Environment used for create transaction
-	// Possible values are 'Production' or 'SandBox'
-	//
-	// Default: SandBox
+	// Environment is the environment (sandbox, production)
 	Environment EnvironmentType
 
-	// ClientId is client_id from payment gateway
-	// it can be apiKey or something like that
-	ClientId string
-
-	// ServerKey is client_secret from payment gateway
+	// ServerKey is the server key for authentication
 	ServerKey string
 
-	// ApiCall interface to request outside
-	//
-	// Default: DefaultApiRequest
-	ApiCall ApiRequestInterface
+	// ClientKey is the client key (provider-specific)
+	ClientKey string
 
-	// When set to true, this will log your request, response or error to stdout
-	// Use logrus as logging
-	//
-	// Default: true
-	Logging *bool
+	// MerchantID is the merchant ID (provider-specific)
+	MerchantID string
+
+	// Timeout is the HTTP request timeout
+	Timeout time.Duration
+
+	// SnapMode indicates if SNAP mode is enabled (for Midtrans)
+	SnapMode bool
+
+	// LogEnabled indicates if logging is enabled
+	LogEnabled bool
 }
 
-// DefaultOptions define all default value of configuration options payment gateway
-var DefaultOptions = &Options{
-	Environment: SandBox,
+// Option is a function that configures the client
+type Option func(*Config)
+
+// WithProvider sets the payment gateway provider
+func WithProvider(provider string) Option {
+	return func(c *Config) {
+		c.Provider = provider
+	}
 }
 
-// NewOption will create an instance of configuration Options
-func NewOption(opts ...*Options) (*Options, error) {
-	opt := DefaultOptions
+// WithEnvironment sets the environment
+func WithEnvironment(env string) Option {
+	return func(c *Config) {
+		if env == string(Production) {
+			c.Environment = Production
+		} else {
+			c.Environment = SandBox
+		}
+	}
+}
 
-	if len(opts) > 0 {
-		opt = opts[0]
+// WithServerKey sets the server key
+func WithServerKey(key string) Option {
+	return func(c *Config) {
+		c.ServerKey = key
+	}
+}
+
+// WithClientKey sets the client key
+func WithClientKey(key string) Option {
+	return func(c *Config) {
+		c.ClientKey = key
+	}
+}
+
+// WithMerchantID sets the merchant ID
+func WithMerchantID(id string) Option {
+	return func(c *Config) {
+		c.MerchantID = id
+	}
+}
+
+// WithTimeout sets the HTTP request timeout
+func WithTimeout(timeout time.Duration) Option {
+	return func(c *Config) {
+		c.Timeout = timeout
+	}
+}
+
+// WithSnap enables SNAP mode (for Midtrans)
+func WithSnap() Option {
+	return func(c *Config) {
+		c.SnapMode = true
+	}
+}
+
+// WithLogging enables or disables logging
+func WithLogging(enabled bool) Option {
+	return func(c *Config) {
+		c.LogEnabled = enabled
+	}
+}
+
+// Environment variable names
+const (
+	EnvProvider   = "PAYMENT_PROVIDER"
+	EnvEnv        = "PAYMENT_ENV"
+	EnvServerKey  = "PAYMENT_SERVER_KEY"
+	EnvClientKey  = "PAYMENT_CLIENT_KEY"
+	EnvMerchantID = "PAYMENT_MERCHANT_ID"
+	EnvTimeout    = "PAYMENT_TIMEOUT"
+	EnvSnap       = "PAYMENT_SNAP"
+	EnvLogging    = "PAYMENT_LOGGING"
+)
+
+// LoadConfigFromEnv loads configuration from environment variables
+func LoadConfigFromEnv() *Config {
+	cfg := &Config{
+		Provider:    os.Getenv(EnvProvider),
+		Environment: SandBox,
+		ServerKey:   os.Getenv(EnvServerKey),
+		ClientKey:   os.Getenv(EnvClientKey),
+		MerchantID:  os.Getenv(EnvMerchantID),
+		Timeout:     30 * time.Second,
+		SnapMode:    os.Getenv(EnvSnap) == "true",
+		LogEnabled:  os.Getenv(EnvLogging) != "false",
 	}
 
-	// init standard logging
-	NewLogger()
-
-	// if environment not exists
-	if reflect.ValueOf(opt.Environment).IsZero() {
-		opt.Environment = SandBox
+	if env := os.Getenv(EnvEnv); env == string(Production) {
+		cfg.Environment = Production
 	}
 
-	if opt.Logging == nil {
-		opt.Logging = &True
-	}
+	return cfg
+}
 
-	// if logging is false or logging function is not exists
-	// disable logging for handle an error
-	if !*opt.Logging {
-		DisableLogging()
+// ApplyOptions applies a list of options to a config
+func ApplyOptions(cfg *Config, opts ...Option) *Config {
+	for _, opt := range opts {
+		opt(cfg)
 	}
+	return cfg
+}
 
-	// make sure clientId or clientSecret exists
-	// if not exists, just given error ErrMissingCredentials
-	if reflect.ValueOf(opt.ClientId).IsZero() || reflect.ValueOf(opt.ServerKey).IsZero() {
-		return nil, ErrMissingCredentials
+// DefaultConfig returns the default configuration
+func DefaultConfig() *Config {
+	return &Config{
+		Provider:    ProviderMidtrans,
+		Environment: SandBox,
+		Timeout:     30 * time.Second,
+		SnapMode:    false,
+		LogEnabled:  true,
 	}
+}
 
-	// make default apiRequestInterface if not exists
-	if opt.ApiCall == nil {
-		opt.ApiCall = DefaultApiRequest()
+// Validate validates the configuration
+func (c *Config) Validate() error {
+	if c.Provider == "" {
+		return NewRequiredFieldError("Provider")
 	}
+	if c.ServerKey == "" {
+		return NewRequiredFieldError("ServerKey")
+	}
+	return nil
+}
 
-	// return an instance of Options
-	return opt, nil
+// IsProduction returns true if the environment is production
+func (c *Config) IsProduction() bool {
+	return c.Environment == Production
+}
+
+// IsSandbox returns true if the environment is sandbox
+func (c *Config) IsSandbox() bool {
+	return c.Environment == SandBox
+}
+
+// IsSnap returns true if SNAP mode is enabled
+func (c *Config) IsSnap() bool {
+	return c.SnapMode
 }
