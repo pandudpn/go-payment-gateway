@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"context"
 	"crypto/hmac"
-	"crypto/sha512"
-	"encoding/hex"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pandudpn/go-payment-gateway/internal/utils"
@@ -29,6 +30,7 @@ const (
 	headerSignature = "Signature"
 	headerTimestamp = "Request-Timestamp"
 	headerClientID  = "Client-Id"
+	headerRequestID = "Request-Id"
 
 	// API URLs
 	sandboxURL    = "https://api-sandbox.doku.com"
@@ -99,8 +101,13 @@ func (d *doku) generatePayment(ctx context.Context, params *GeneratePaymentReque
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	timestamp := fmt.Sprintf("%d", time.Now().Unix())
-	signature := d.generateSignature(bodyBytes, timestamp, "/payments/v2")
+	// Generate ISO8601 timestamp
+	timestamp := time.Now().UTC().Format(time.RFC3339)
+	// Generate unique request ID
+	requestID := generateRequestID()
+
+	digest := d.generateDigest(bodyBytes)
+	signature := d.generateSignature(digest, timestamp, requestID, generatePaymentUri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fullURL, bytes.NewReader(bodyBytes))
 	if err != nil {
@@ -110,6 +117,7 @@ func (d *doku) generatePayment(ctx context.Context, params *GeneratePaymentReque
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set(headerClientID, d.config.ClientKey)
+	req.Header.Set(headerRequestID, requestID)
 	req.Header.Set(headerTimestamp, timestamp)
 	req.Header.Set(headerSignature, signature)
 
@@ -145,8 +153,13 @@ func (d *doku) GetStatus(ctx context.Context, orderID string) (*pg.PaymentStatus
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	timestamp := fmt.Sprintf("%d", time.Now().Unix())
-	signature := d.generateSignature(bodyBytes, timestamp, "/transactions/v2")
+	// Generate ISO8601 timestamp
+	timestamp := time.Now().UTC().Format(time.RFC3339)
+	// Generate unique request ID
+	requestID := generateRequestID()
+
+	digest := d.generateDigest(bodyBytes)
+	signature := d.generateSignature(digest, timestamp, requestID, statusUri)
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, fullURL, bytes.NewReader(bodyBytes))
 	if err != nil {
@@ -156,6 +169,7 @@ func (d *doku) GetStatus(ctx context.Context, orderID string) (*pg.PaymentStatus
 	httpReq.Header.Set("Content-Type", "application/json")
 	httpReq.Header.Set("Accept", "application/json")
 	httpReq.Header.Set(headerClientID, d.config.ClientKey)
+	httpReq.Header.Set(headerRequestID, requestID)
 	httpReq.Header.Set(headerTimestamp, timestamp)
 	httpReq.Header.Set(headerSignature, signature)
 
@@ -193,8 +207,9 @@ func (d *doku) Cancel(ctx context.Context, orderID string) error {
 func (d *doku) VerifyWebhook(r *http.Request) bool {
 	signature := r.Header.Get("Signature")
 	timestamp := r.Header.Get("Request-Timestamp")
+	requestID := r.Header.Get("Request-Id")
 
-	if signature == "" || timestamp == "" {
+	if signature == "" || timestamp == "" || requestID == "" {
 		return false
 	}
 
@@ -207,20 +222,14 @@ func (d *doku) VerifyWebhook(r *http.Request) bool {
 	// Restore body for subsequent reads
 	r.Body = io.NopCloser(bytes.NewReader(body))
 
+	// Calculate digest
+	digest := d.generateDigest(body)
+
 	// Calculate expected signature
-	digest := sha512.Sum512(body)
-	hexDigest := hex.EncodeToString(digest[:])
+	expectedSignature := d.generateSignature(digest, timestamp, requestID, "/payments/v2")
 
-	target := fmt.Sprintf("%s:%s:%s", d.config.ClientKey, timestamp, hexDigest)
-	h := hmac.New(sha512.New, []byte(d.config.ServerKey))
-	h.Write([]byte(target))
-	expectedSignature := hex.EncodeToString(h.Sum(nil))
-
-	// Signature header format: CLIENT_ID:SIGNATURE
-	// We need to extract the signature part and compare, or reconstruct full format
-	expectedFullSignature := fmt.Sprintf("%s:%s", d.config.ClientKey, expectedSignature)
-
-	return signature == expectedFullSignature
+	// Compare signatures
+	return signature == expectedSignature
 }
 
 // ParseWebhook parses webhook payload
@@ -272,21 +281,53 @@ func (d *doku) ParseWebhook(r *http.Request) (*pg.WebhookEvent, error) {
 	}, nil
 }
 
-// generateSignature generates Doku signature
-func (d *doku) generateSignature(body []byte, timestamp, path string) string {
-	digest := sha512.Sum512(body)
-	hexDigest := hex.EncodeToString(digest[:])
+// generateDigest generates SHA-256 digest of request body
+// Digest format: base64(sha256(body))
+func (d *doku) generateDigest(body []byte) string {
+	hasher := sha256.New()
+	hasher.Write(body)
+	return base64.StdEncoding.EncodeToString(hasher.Sum(nil))
+}
 
-	// Doku signature format: CLIENT_ID:TIMESTAMP:REQUEST_BODY_DIGEST
-	target := fmt.Sprintf("%s:%s:%s", d.config.ClientKey, timestamp, hexDigest)
+// generateSignature generates Doku HMAC-SHA256 signature
+// Signature component format:
+// Client-Id:{clientId}
+// Request-Id:{requestId}
+// Request-Timestamp:{timestamp}
+// Request-Target:{target}
+// Digest:{digest}
+func (d *doku) generateSignature(digest, timestamp, requestID, targetPath string) string {
+	// Prepare signature component
+	var component strings.Builder
+	component.WriteString("Client-Id:" + d.config.ClientKey + "\n")
+	component.WriteString("Request-Id:" + requestID + "\n")
+	component.WriteString("Request-Timestamp:" + timestamp + "\n")
+	component.WriteString("Request-Target:" + targetPath + "\n")
+	component.WriteString("Digest:" + digest)
 
-	// HMAC-SHA512 with Server Key
-	h := hmac.New(sha512.New, []byte(d.config.ServerKey))
-	h.Write([]byte(target))
-	signature := hex.EncodeToString(h.Sum(nil))
+	// Calculate HMAC-SHA256
+	h := hmac.New(sha256.New, []byte(d.config.ServerKey))
+	h.Write([]byte(component.String()))
+	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
 
-	// Final signature: CLIENT_ID:SIGNATURE
-	return fmt.Sprintf("%s:%s", d.config.ClientKey, signature)
+	// Prepend with algorithm info
+	return "HMACSHA256=" + signature
+}
+
+// generateRequestID generates a unique request ID
+func generateRequestID() string {
+	return fmt.Sprintf("req-%d-%s", time.Now().UnixMilli(), randomString(16))
+}
+
+// randomString generates a random string of specified length
+func randomString(n int) string {
+	const letters = "abcdefghijklmnopqrstuvwxyz0123456789"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letters[time.Now().UnixNano()%int64(len(letters))]
+		time.Sleep(time.Nanosecond)
+	}
+	return string(b)
 }
 
 // validateChargeParams validates charge parameters

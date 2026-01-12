@@ -3,8 +3,8 @@ package doku
 import (
 	"context"
 	"crypto/hmac"
-	"crypto/sha512"
-	"encoding/hex"
+	"crypto/sha256"
+	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -118,32 +118,38 @@ func TestDoku_generateSignature(t *testing.T) {
 	}
 
 	body := []byte(`{"test": "data"}`)
-	timestamp := "1234567890"
+
+	// Generate digest
+	hasher := sha256.New()
+	hasher.Write(body)
+	digest := base64.StdEncoding.EncodeToString(hasher.Sum(nil))
+
+	timestamp := "2023-01-01T00:00:00Z"
+	requestID := "req-123456"
 	path := "/payments/v2"
 
-	signature := provider.generateSignature(body, timestamp, path)
+	signature := provider.generateSignature(digest, timestamp, requestID, path)
 
-	// Verify signature format: CLIENT_ID:SIGNATURE
-	parts := strings.Split(signature, ":")
-	if len(parts) != 2 {
-		t.Errorf("signature format incorrect, expected 2 parts, got %d", len(parts))
-	}
-
-	if parts[0] != provider.config.ClientKey {
-		t.Errorf("signature client ID = %v, want %v", parts[0], provider.config.ClientKey)
+	// Verify signature format: HMACSHA256=signature
+	if !strings.HasPrefix(signature, "HMACSHA256=") {
+		t.Errorf("signature format incorrect, should start with HMACSHA256=, got %v", signature)
 	}
 
 	// Verify the signature value
-	digest := sha512.Sum512(body)
-	hexDigest := hex.EncodeToString(digest[:])
-	target := provider.config.ClientKey + ":" + timestamp + ":" + hexDigest
+	var component strings.Builder
+	component.WriteString("Client-Id:test-client-id\n")
+	component.WriteString("Request-Id:" + requestID + "\n")
+	component.WriteString("Request-Timestamp:" + timestamp + "\n")
+	component.WriteString("Request-Target:" + path + "\n")
+	component.WriteString("Digest:" + digest)
 
-	h := hmac.New(sha512.New, []byte(provider.config.ServerKey))
-	h.Write([]byte(target))
-	expectedSignature := hex.EncodeToString(h.Sum(nil))
+	h := hmac.New(sha256.New, []byte("test-server-key"))
+	h.Write([]byte(component.String()))
+	expectedSignature := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	fullExpectedSignature := "HMACSHA256=" + expectedSignature
 
-	if parts[1] != expectedSignature {
-		t.Errorf("signature value = %v, want %v", parts[1], expectedSignature)
+	if signature != fullExpectedSignature {
+		t.Errorf("signature value = %v, want %v", signature, fullExpectedSignature)
 	}
 }
 
@@ -155,6 +161,7 @@ func TestDoku_VerifyWebhook(t *testing.T) {
 		body      string
 		signature string
 		timestamp string
+		requestID string
 		want      bool
 	}{
 		{
@@ -162,7 +169,8 @@ func TestDoku_VerifyWebhook(t *testing.T) {
 			serverKey: "test-server-key",
 			clientKey: "test-client-id",
 			body:      `{"transaction_id": "ORDER-001"}`,
-			timestamp: "1234567890",
+			timestamp: "2023-01-01T00:00:00Z",
+			requestID: "req-123456",
 			want:      true,
 		},
 		{
@@ -171,7 +179,8 @@ func TestDoku_VerifyWebhook(t *testing.T) {
 			clientKey: "test-client-id",
 			body:      `{"transaction_id": "ORDER-001"}`,
 			signature: "invalid-signature",
-			timestamp: "1234567890",
+			timestamp: "2023-01-01T00:00:00Z",
+			requestID: "req-123456",
 			want:      false,
 		},
 		{
@@ -179,7 +188,16 @@ func TestDoku_VerifyWebhook(t *testing.T) {
 			serverKey: "test-server-key",
 			clientKey: "test-client-id",
 			body:      `{"transaction_id": "ORDER-001"}`,
-			timestamp: "1234567890",
+			timestamp: "2023-01-01T00:00:00Z",
+			requestID: "req-123456",
+			want:      false,
+		},
+		{
+			name:      "missing request-id",
+			serverKey: "test-server-key",
+			clientKey: "test-client-id",
+			body:      `{"transaction_id": "ORDER-001"}`,
+			timestamp: "2023-01-01T00:00:00Z",
 			want:      false,
 		},
 	}
@@ -194,20 +212,34 @@ func TestDoku_VerifyWebhook(t *testing.T) {
 				mapper: &Mapper{},
 			}
 
-			// Calculate signature for valid test case
-			if tt.want && tt.signature == "" {
-				digest := sha512.Sum512([]byte(tt.body))
-				hexDigest := hex.EncodeToString(digest[:])
-				target := tt.clientKey + ":" + tt.timestamp + ":" + hexDigest
-				h := hmac.New(sha512.New, []byte(tt.serverKey))
-				h.Write([]byte(target))
-				sig := hex.EncodeToString(h.Sum(nil))
-				tt.signature = tt.clientKey + ":" + sig
+			// Calculate signature for valid test case using new format
+			if tt.want && tt.signature == "" && tt.requestID != "" {
+				// Generate SHA-256 digest
+				hasher := sha256.New()
+				hasher.Write([]byte(tt.body))
+				digest := base64.StdEncoding.EncodeToString(hasher.Sum(nil))
+
+				// Build signature component
+				var component strings.Builder
+				component.WriteString("Client-Id:" + tt.clientKey + "\n")
+				component.WriteString("Request-Id:" + tt.requestID + "\n")
+				component.WriteString("Request-Timestamp:" + tt.timestamp + "\n")
+				component.WriteString("Request-Target:/payments/v2\n")
+				component.WriteString("Digest:" + digest)
+
+				// Calculate HMAC-SHA256
+				h := hmac.New(sha256.New, []byte(tt.serverKey))
+				h.Write([]byte(component.String()))
+				sig := base64.StdEncoding.EncodeToString(h.Sum(nil))
+				tt.signature = "HMACSHA256=" + sig
 			}
 
 			req := httptest.NewRequest("POST", "/webhook", strings.NewReader(tt.body))
 			req.Header.Set("Signature", tt.signature)
 			req.Header.Set("Request-Timestamp", tt.timestamp)
+			if tt.requestID != "" {
+				req.Header.Set("Request-Id", tt.requestID)
+			}
 
 			got := provider.VerifyWebhook(req)
 			if got != tt.want {
